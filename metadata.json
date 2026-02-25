@@ -1,0 +1,7 @@
+{
+  "name": "SaaS Construction Management Mobile App",
+  "description": "A high-end SaaS construction management application with AI-powered insights, activity tracking, and project workspace management.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}

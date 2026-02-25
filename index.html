@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#faf9f6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Kala Project - Construction Management</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#3b82f6',
+              'primary-dark': '#e05530',
+            }
+          }
+        }
+      }
+    </script>
+    <!-- Plus Jakarta Sans with all weights including 800 (extrabold) and 900 (black) -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Dark mode CSS variables */
+        :root {
+            --bg-primary: #faf9f6;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f8fafc;
+            --text-primary: #3b82f6;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-primary: #e2e8f0;
+            --border-secondary: #f1f5f9;
+        }
+
+        .dark {
+            --bg-primary: #2563eb;
+            --bg-secondary: #3b82f6;
+            --bg-tertiary: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-primary: #334155;
+            --border-secondary: #3b82f6;
+        }
+
+        /* Dark mode body background */
+        .dark body {
+            background-color: #2563eb;
+        }
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        /* Prevent text selection on interactive elements only */
+        button, [role="button"], .no-select {
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Custom scrollbar for desktop preview */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Hide scrollbar but allow scrolling */
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Focus States for Accessibility */
+        *:focus {
+            outline: none;
+        }
+        *:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #3b82f6;
+            border-radius: inherit;
+        }
+
+        /* Smooth Animations */
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .animate-shimmer {
+            animation: shimmer 2s infinite linear;
+            background: linear-gradient(90deg, #e2e8f0 0%, #f1f5f9 50%, #e2e8f0 100%);
+            background-size: 200% 100%;
+        }
+
+        .dark .animate-shimmer {
+            background: linear-gradient(90deg, #334155 0%, #475569 50%, #334155 100%);
+            background-size: 200% 100%;
+        }
+
+        /* Stagger animation for lists */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-stagger > * {
+            animation: fadeInUp 0.3s ease-out backwards;
+        }
+        .animate-stagger > *:nth-child(1) { animation-delay: 0ms; }
+        .animate-stagger > *:nth-child(2) { animation-delay: 50ms; }
+        .animate-stagger > *:nth-child(3) { animation-delay: 100ms; }
+        .animate-stagger > *:nth-child(4) { animation-delay: 150ms; }
+        .animate-stagger > *:nth-child(5) { animation-delay: 200ms; }
+        .animate-stagger > *:nth-child(6) { animation-delay: 250ms; }
+        .animate-stagger > *:nth-child(7) { animation-delay: 300ms; }
+        .animate-stagger > *:nth-child(8) { animation-delay: 350ms; }
+
+        /* Safe area helpers */
+        .safe-top { padding-top: env(safe-area-inset-top); }
+        .safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+
+        /* Glass effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .dark .glass {
+            background: rgba(30, 41, 59, 0.85);
+        }
+
+        /* Truncate utilities */
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="overflow-x-hidden">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
