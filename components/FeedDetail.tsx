@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
-  ChevronLeft, ChevronRight, MoreHorizontal, Send, X, Image as ImageIcon,
+  ChevronRight, MoreHorizontal, Send, X, Image as ImageIcon,
   FileText, Reply, Pencil, Trash2, Clock, Tag, Compass, Users, Calendar,
   MapPin, Layers, AlertTriangle, FileInput, ChevronDown, ChevronUp, Lock, EyeOff,
   Camera, Plus, FolderOpen
 } from 'lucide-react';
 import { FeedItem, FeedComment, FeedAttachment, StreamItem, getStatusConfig, SUBMITTAL_STATUS_CONFIG, ISSUE_STATUS_CONFIG } from '../types';
 import FeedStreamItem from './feed-stream-item';
+import OverlayHeader from './overlay-header';
 import ActionSheet from './ActionSheet';
 import ActionForm, { ActionFormType, ActionFormData } from './ActionForm';
 import { projectUsers } from './mockData';
@@ -150,18 +151,10 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
   return (
     <div className="fixed inset-0 bg-[#faf9f6] dark:bg-slate-900 z-[60] flex flex-col animate-in slide-in-from-right duration-200">
       {/* Sticky Header */}
-      <div
-        className="flex-shrink-0 border-b border-slate-100/60 dark:border-slate-700/60 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md"
-        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
-      >
-        <div className="flex items-center justify-between px-4 py-3">
-          <button
-            onClick={onClose}
-            className="w-10 h-10 flex items-center justify-center rounded-full active:bg-slate-100 dark:active:bg-slate-700 active:scale-[0.98] transition-all -ml-1"
-          >
-            <ChevronLeft size={24} className="text-slate-800 dark:text-slate-200" />
-          </button>
-          <div className="flex items-center gap-1.5">
+      <OverlayHeader
+        onBack={onClose}
+        center={
+          <>
             {/* Private Badge */}
             {(item.visibility === 'private' || item.visibility === 'both') && (
               <span className="inline-flex items-center gap-1 text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wide bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
@@ -179,22 +172,21 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
             {/* Status Badge - solid with alpha background */}
             <span
               className="inline-flex text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wide"
-              style={{
-                color: statusColor,
-                backgroundColor: `${statusColor}20`
-              }}
+              style={{ color: statusColor, backgroundColor: `${statusColor}20` }}
             >
               {statusLabel}
             </span>
-          </div>
+          </>
+        }
+        right={
           <button
             onClick={() => setShowActionSheet(true)}
             className="w-10 h-10 flex items-center justify-center rounded-full active:bg-slate-100 dark:active:bg-slate-700 transition-all"
           >
             <MoreHorizontal size={20} className="text-slate-500 dark:text-slate-400" />
           </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>

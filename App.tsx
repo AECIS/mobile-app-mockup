@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
-import { Search, Bell, ChevronLeft } from 'lucide-react';
+import { Search, Bell } from 'lucide-react';
 import { useTheme, useOffline } from './context';
 import OfflineIndicator from './components/OfflineIndicator';
 import Notifications from './components/Notifications';
@@ -13,6 +13,7 @@ import BottomNav from './components/BottomNav';
 import ProjectDrawer from './components/ProjectDrawer';
 import DirectoryView from './components/DirectoryView';
 import FeedsView from './components/FeedsView';
+import OverlayHeader from './components/overlay-header';
 import ToolsView from './components/ToolsView';
 import { DailyReportList, DailyReportDetail } from './components/DailyReport';
 import { DailyReportSummary } from './components/DailyReport/types';
@@ -252,7 +253,7 @@ const App: React.FC = () => {
   const renderContent = () => {
     if (currentTab === BottomTab.TOOLS) {
       return (
-        <div className="px-3 pt-3 pb-8">
+        <div className="px-3 pt-2">
           <ToolsView
             onOpenIssues={() => setFeedsScope('Issues')}
             onOpenSubmittals={() => setFeedsScope('Submittals')}
@@ -268,7 +269,7 @@ const App: React.FC = () => {
 
     if (currentTab === BottomTab.PROFILE) {
       return (
-        <div className="px-3 pt-3 pb-8">
+        <div className="px-3 pt-2">
           <ProfileView onLogout={() => console.log('Logout clicked')} />
         </div>
       );
@@ -334,19 +335,9 @@ const App: React.FC = () => {
 
       {/* Feeds overlay — scoped to Issues or Submittals (incl. RFS) */}
       {feedsScope && (
-        <div className="fixed inset-0 z-50 bg-[#faf9f6] dark:bg-slate-900 max-w-md mx-auto overflow-y-auto">
-          <div className="sticky top-0 z-10 bg-[#faf9f6] dark:bg-slate-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-            <header className="flex items-center gap-3 px-3 pt-2 pb-1.5">
-              <button
-                onClick={() => setFeedsScope(null)}
-                className="w-8 h-8 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-sm active:bg-slate-50 dark:active:bg-slate-700 transition-colors"
-              >
-                <ChevronLeft size={20} className="text-slate-600 dark:text-slate-300" />
-              </button>
-              <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">{feedsScope}</h1>
-            </header>
-          </div>
-          <div className="px-3 pb-8">
+        <div className="fixed inset-0 z-50 bg-[#faf9f6] dark:bg-slate-900 max-w-md mx-auto flex flex-col">
+          <OverlayHeader title={feedsScope} onBack={() => setFeedsScope(null)} />
+          <div className="flex-1 overflow-y-auto px-3 pb-6">
             <FeedsView
               onSelectFeed={setSelectedFeed}
               feedTypes={feedsScope === 'Issues' ? ['Issue'] : ['Submittal', 'RFS']}
@@ -395,19 +386,9 @@ const App: React.FC = () => {
 
       {/* Directory overlay */}
       {isDirectoryOpen && (
-        <div className="fixed inset-0 z-50 bg-[#faf9f6] dark:bg-slate-900 max-w-md mx-auto overflow-y-auto">
-          <div className="sticky top-0 z-10 bg-[#faf9f6] dark:bg-slate-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
-            <header className="flex items-center gap-3 px-3 pt-2 pb-1.5">
-              <button
-                onClick={() => setIsDirectoryOpen(false)}
-                className="w-8 h-8 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-sm active:bg-slate-50 dark:active:bg-slate-700 transition-colors"
-              >
-                <ChevronLeft size={20} className="text-slate-600 dark:text-slate-300" />
-              </button>
-              <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">Directory</h1>
-            </header>
-          </div>
-          <div className="px-3 pt-1 pb-8">
+        <div className="fixed inset-0 z-50 bg-[#faf9f6] dark:bg-slate-900 max-w-md mx-auto flex flex-col">
+          <OverlayHeader title="Directory" onBack={() => setIsDirectoryOpen(false)} />
+          <div className="flex-1 overflow-y-auto px-3 pt-3 pb-6">
             <DirectoryView />
           </div>
         </div>

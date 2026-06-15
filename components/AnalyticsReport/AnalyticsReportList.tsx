@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import {
-  ChevronLeft, Search, Calendar, ChevronDown, Download, CheckCircle,
+  Search, Calendar, ChevronDown, Download, CheckCircle,
   FileText, RefreshCw, X, Loader2
 } from 'lucide-react';
+import OverlayHeader from '../overlay-header';
 import {
   ReportMode, ToolType, ToolTab, GroupReportType,
   ArchiveReport, OnlineReportType, ReportSection
@@ -387,33 +388,25 @@ const AnalyticsReportList: React.FC<AnalyticsReportListProps> = ({ onClose }) =>
   return (
     <div className="fixed inset-0 bg-[#faf9f6] dark:bg-slate-900 z-[60] flex flex-col animate-in slide-in-from-right duration-300 transition-colors">
       {/* Header */}
-      <div
-        className="bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 px-4 py-3 flex items-center justify-between transition-colors"
-        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
-      >
-        <button
-          onClick={onClose}
-          className="w-10 h-10 flex items-center justify-center rounded-full active:bg-slate-100 dark:active:bg-slate-700 transition-colors cursor-pointer"
-        >
-          <ChevronLeft size={24} className="text-slate-700 dark:text-slate-300" />
-        </button>
-
-        <h1 className="text-[17px] font-bold text-slate-800 dark:text-slate-100">Reports</h1>
-
-        <ModeToggle mode={mode} onToggle={(newMode) => {
-          if (newMode !== mode) {
-            setMode(newMode);
-            // If current tab doesn't exist in new mode, reset to first tab
-            if (newMode === 'online') {
-              const currentTab = toolTabs.find(t => t.id === activeTab);
-              if (currentTab?.excludeFromOnline) {
-                setActiveTab('submittal');
+      <OverlayHeader
+        title="Reports"
+        onBack={onClose}
+        right={
+          <ModeToggle mode={mode} onToggle={(newMode) => {
+            if (newMode !== mode) {
+              setMode(newMode);
+              // If current tab doesn't exist in new mode, reset to first tab
+              if (newMode === 'online') {
+                const currentTab = toolTabs.find(t => t.id === activeTab);
+                if (currentTab?.excludeFromOnline) {
+                  setActiveTab('submittal');
+                }
               }
+              setSelectedGroup(null);
             }
-            setSelectedGroup(null);
-          }
-        }} />
-      </div>
+          }} />
+        }
+      />
 
       {/* Date Range (Archive mode only) */}
       {mode === 'archive' && (

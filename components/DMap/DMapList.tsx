@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import {
-  ChevronLeft, Plus, ChevronRight, ChevronDown, Download, CheckCircle,
+  Plus, ChevronRight, ChevronDown, Download, CheckCircle,
   Clock, AlertCircle, Loader2, Search, Filter, Settings, MapPin, RefreshCw
 } from 'lucide-react';
+import OverlayHeader from '../overlay-header';
 import { MapLayout, DMapSection, DMapGroupBy, DMapSortBy, DMapSortOrder, DownloadState } from './types';
 import {
   mockMapLayouts, groupMapsByDiscipline, groupMapsByDrawingSet, groupMapsByDrawingType
@@ -263,35 +264,28 @@ const DMapList: React.FC<DMapListProps> = ({ onClose, onSelectMap }) => {
   return (
     <div className="fixed inset-0 bg-[#faf9f6] z-[60] flex flex-col animate-in slide-in-from-right duration-300">
       {/* Header */}
-      <div
-        className="flex-shrink-0 px-4 py-3 flex items-center justify-between border-b border-slate-100/60 bg-white/95 backdrop-blur-md"
-        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
-      >
-        <button
-          onClick={onClose}
-          className="w-10 h-10 flex items-center justify-center rounded-full active:bg-slate-100 active:scale-[0.98] transition-all -ml-1"
-          aria-label="Go back"
-        >
-          <ChevronLeft size={24} className="text-slate-800" />
-        </button>
-        <h1 className="text-lg font-black text-slate-800 tracking-tight">DMaps</h1>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowViewMode(true)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 active:scale-[0.95] transition-all"
-            aria-label="View settings"
-          >
-            <Settings size={18} />
-          </button>
-          <button
-            onClick={() => setShowCreatable(true)}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-[#3b82f6] text-white active:scale-[0.95] transition-all shadow-lg"
-            aria-label="Create new DMap"
-          >
-            <Plus size={22} />
-          </button>
-        </div>
-      </div>
+      <OverlayHeader
+        title="DMaps"
+        onBack={onClose}
+        right={
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowViewMode(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 active:scale-[0.95] transition-all"
+              aria-label="View settings"
+            >
+              <Settings size={18} />
+            </button>
+            <button
+              onClick={() => setShowCreatable(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-[#3b82f6] text-white active:scale-[0.95] transition-all shadow-lg"
+              aria-label="Create new DMap"
+            >
+              <Plus size={22} />
+            </button>
+          </div>
+        }
+      />
 
       {/* Search & Filter Bar */}
       <div className="flex-shrink-0 px-3 py-2 bg-white border-b border-slate-100/50">

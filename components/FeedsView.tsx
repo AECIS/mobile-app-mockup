@@ -365,12 +365,9 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
 
   return (
     <>
-      <div className="pb-6">
-        {/* Quick filters + Filter button - single aligned row, sticky */}
-        <div
-          className="sticky z-30 bg-[#faf9f6] dark:bg-slate-900 -mx-3 px-3 py-2 mb-3 flex items-center gap-2 transition-colors"
-          style={{ top: '46px', transform: 'translateZ(0)', willChange: 'transform' }}
-        >
+      <div>
+        {/* Quick filters + Filter button - single aligned row, sticky at top */}
+        <div className="sticky top-0 z-30 bg-[#faf9f6] dark:bg-slate-900 -mx-3 px-3 py-2 mb-3 flex items-center gap-2 transition-colors">
           <div className="flex gap-2 overflow-x-auto no-scrollbar flex-1" role="tablist" aria-label="Quick filters">
             {/* All tab - always visible */}
             <button

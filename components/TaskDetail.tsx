@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { Task } from '../types';
 // Added MessageSquare to the imports from lucide-react
-import { X, MoreVertical, FileText, Calendar, Clock, Users, Paperclip, Send, Smile, MessageSquare } from 'lucide-react';
+import { MoreVertical, FileText, Calendar, Clock, Users, Paperclip, Send, Smile, MessageSquare } from 'lucide-react';
 import ActionDrawer from './ActionDrawer';
+import OverlayHeader from './overlay-header';
 
 interface TaskDetailProps {
   task: Task;
@@ -14,23 +15,21 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose }) => {
   const [isActionsOpen, setIsActionsOpen] = useState(false);
 
   return (
-    <div className="fixed inset-0 bg-white dark:bg-slate-900 z-[60] overflow-y-auto animate-in slide-in-from-bottom duration-300">
-      <header className="sticky top-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md z-10 flex items-center justify-between px-4 py-6 border-b border-slate-50 dark:border-slate-700">
-        <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">Task detail</h1>
-        <div className="flex gap-2">
+    <div className="fixed inset-0 bg-white dark:bg-slate-900 z-[60] flex flex-col animate-in slide-in-from-bottom duration-300">
+      <OverlayHeader
+        title="Task detail"
+        onBack={onClose}
+        right={
           <button
             onClick={() => setIsActionsOpen(true)}
             className="w-10 h-10 flex items-center justify-center text-slate-400 dark:text-slate-500"
           >
             <MoreVertical size={24} />
           </button>
-          <button onClick={onClose} className="w-10 h-10 flex items-center justify-center text-slate-400 dark:text-slate-500">
-            <X size={24} />
-          </button>
-        </div>
-      </header>
+        }
+      />
 
-      <div className="px-6 py-4">
+      <div className="flex-1 overflow-y-auto px-6 py-4">
         <span className="inline-block bg-[#f7fcf2] dark:bg-green-950 text-[#65a34a] dark:text-green-400 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-4">
           • To Do
         </span>

@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
 import {
-  ChevronLeft, MoreVertical, FileText, Calendar, Download,
+  MoreVertical, FileText, Calendar, Download,
   Layers, AlertTriangle, MessageSquare, CheckCircle, Clock,
   Bell, BellOff, Check, Trash2, X, AtSign, Send
 } from 'lucide-react';
+import OverlayHeader from './overlay-header';
 
 interface NotificationsProps {
   onClose: () => void;
@@ -393,42 +394,36 @@ const Notifications: React.FC<NotificationsProps> = ({ onClose }) => {
   return (
     <div className="fixed inset-0 bg-[#faf9f6] dark:bg-slate-900 z-[60] flex flex-col transition-colors animate-in slide-in-from-right duration-300">
       {/* Header */}
-      <header
-        className="bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 px-4 py-2 flex items-center justify-between transition-colors"
-        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
-      >
-        <button
-          onClick={onClose}
-          className="w-9 h-9 bg-slate-50 dark:bg-slate-700 rounded-full flex items-center justify-center active:bg-slate-100 dark:active:bg-slate-600 transition-colors"
-        >
-          <ChevronLeft size={20} className="text-slate-600 dark:text-slate-300" />
-        </button>
-
-        <div className="flex items-center gap-2">
-          <Bell size={18} className="text-[#3b82f6]" />
-          <h1 className="text-[17px] font-bold text-slate-800 dark:text-slate-100">Notifications</h1>
-          {unreadCount > 0 && (
-            <span className="min-w-[20px] h-5 px-1.5 bg-[#3b82f6] text-white text-[10px] font-black rounded-full flex items-center justify-center">
-              {unreadCount}
-            </span>
-          )}
-        </div>
-
-        <div className="relative">
-          <button
-            onClick={() => setShowActionsMenu(!showActionsMenu)}
-            className="w-9 h-9 bg-slate-50 dark:bg-slate-700 rounded-full flex items-center justify-center active:bg-slate-100 dark:active:bg-slate-600 transition-colors"
-          >
-            <MoreVertical size={18} className="text-slate-600 dark:text-slate-300" />
-          </button>
-          <ActionsMenu
-            isOpen={showActionsMenu}
-            onClose={() => setShowActionsMenu(false)}
-            onMarkAllRead={handleMarkAllRead}
-            onClearAll={handleClearAll}
-          />
-        </div>
-      </header>
+      <OverlayHeader
+        onBack={onClose}
+        center={
+          <>
+            <Bell size={18} className="text-[#3b82f6]" />
+            <h1 className="text-[17px] font-bold text-slate-800 dark:text-slate-100">Notifications</h1>
+            {unreadCount > 0 && (
+              <span className="min-w-[20px] h-5 px-1.5 bg-[#3b82f6] text-white text-[10px] font-black rounded-full flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+          </>
+        }
+        right={
+          <div className="relative">
+            <button
+              onClick={() => setShowActionsMenu(!showActionsMenu)}
+              className="w-9 h-9 bg-slate-50 dark:bg-slate-700 rounded-full flex items-center justify-center active:bg-slate-100 dark:active:bg-slate-600 transition-colors"
+            >
+              <MoreVertical size={18} className="text-slate-600 dark:text-slate-300" />
+            </button>
+            <ActionsMenu
+              isOpen={showActionsMenu}
+              onClose={() => setShowActionsMenu(false)}
+              onMarkAllRead={handleMarkAllRead}
+              onClearAll={handleClearAll}
+            />
+          </div>
+        }
+      />
 
       {/* Filter Tabs */}
       <div className="px-3 py-2 bg-white dark:bg-slate-800 border-b border-slate-100 dark:border-slate-700 transition-colors">
