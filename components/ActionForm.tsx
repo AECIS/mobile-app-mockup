@@ -310,7 +310,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
             <ChevronLeft size={24} className="text-slate-800 dark:text-slate-100" />
           </button>
           <div className="flex-1 text-center">
-            <h1 className="text-lg font-black text-slate-800 dark:text-slate-100">{config.title}</h1>
+            <h1 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">{config.title}</h1>
           </div>
           <button
             onClick={handleSubmit}
@@ -347,7 +347,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
           {/* Visibility Options (Private & Restricted) */}
           {config.showVisibilityOptions && (
             <div className="mb-6">
-              <div className="text-[11px] font-black uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
+              <div className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
                 <EyeOff size={14} />
                 Visibility Settings
               </div>
@@ -392,10 +392,10 @@ const ActionForm: React.FC<ActionFormProps> = ({
           {/* New Assignee (for Reassign - single) */}
           {config.showAssignee && (
             <div className="mb-6">
-              <div className="text-[11px] font-black uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
+              <div className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
                 <UserPlus size={14} />
                 New Assignee
-                <span className="text-[8px] font-black text-red-400 uppercase tracking-tight">Required</span>
+                <span className="text-[8px] font-extrabold text-red-400 uppercase tracking-tight">Required</span>
               </div>
               <button
                 onClick={() => { setShowAssigneePicker(true); setPickerMode('single'); }}
@@ -434,10 +434,10 @@ const ActionForm: React.FC<ActionFormProps> = ({
           {/* Multiple Assignees (for Issue To) */}
           {config.showMultipleAssignees && (
             <div className="mb-6">
-              <div className="text-[11px] font-black uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
+              <div className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
                 <Users size={14} />
                 Issue To
-                <span className="text-[8px] font-black text-red-400 uppercase tracking-tight">Required</span>
+                <span className="text-[8px] font-extrabold text-red-400 uppercase tracking-tight">Required</span>
                 {newAssignees.length > 0 && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600">
                     {newAssignees.length} selected
@@ -482,7 +482,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
 
           {/* Note */}
           <div className="mb-6">
-            <div className="text-[11px] font-black uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
+            <div className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
               <FileText size={14} />
               Note
             </div>
@@ -497,7 +497,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
 
           {/* Attachments */}
           <div className="mb-6">
-            <div className="text-[11px] font-black uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
+            <div className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
               <Paperclip size={14} />
               Attachments
             </div>
@@ -588,7 +588,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
 
           {/* Email Notification */}
           <div className="mb-6">
-            <div className="text-[11px] font-black uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
+            <div className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 mb-2 flex items-center gap-2">
               <Mail size={14} />
               Email Notification
             </div>
@@ -616,7 +616,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Users size={14} className="text-slate-400 dark:text-slate-500" />
-                    <span className="text-[11px] font-black uppercase tracking-tight text-slate-400">Distribution List</span>
+                    <span className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400">Distribution List</span>
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
                       {distributionList.length}
                     </span>
@@ -681,7 +681,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-3 border-b border-slate-100 dark:border-slate-700">
-              <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">Select Recipients</h3>
+              <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">Select Recipients</h3>
               <button
                 onClick={() => { setShowUserPicker(false); setUserSearch(''); }}
                 className="text-[13px] font-bold text-[#3b82f6] px-4 py-2 rounded-full active:bg-blue-50 dark:active:bg-blue-900/30"
@@ -762,7 +762,7 @@ const ActionForm: React.FC<ActionFormProps> = ({
 
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-3 border-b border-slate-100 dark:border-slate-700">
-              <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">
+              <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">
                 {pickerMode === 'multiple' ? 'Select Assignees' : 'Select Assignee'}
               </h3>
               {pickerMode === 'multiple' ? (

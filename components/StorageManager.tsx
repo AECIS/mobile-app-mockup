@@ -229,7 +229,7 @@ const StorageManager: React.FC<StorageManagerProps> = ({ isOpen, onClose }) => {
           </div>
           <div className="flex-1">
             <div className="flex items-baseline justify-between">
-              <span className="text-2xl font-black text-slate-800 dark:text-slate-100">{percentage}%</span>
+              <span className="text-2xl font-extrabold text-slate-800 dark:text-slate-100">{percentage}%</span>
               <span className="text-[12px] text-slate-500 dark:text-slate-400">
                 {formatBytes(used)} / {formatBytes(total)}
               </span>
@@ -620,7 +620,7 @@ const StorageManager: React.FC<StorageManagerProps> = ({ isOpen, onClose }) => {
             <ChevronLeft size={24} className="text-slate-800 dark:text-slate-100" />
           </button>
           <div className="flex-1 text-center">
-            <h1 className="text-lg font-black text-slate-800 dark:text-slate-100">
+            <h1 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">
               {getHeaderTitle()}
             </h1>
           </div>

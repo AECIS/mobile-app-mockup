@@ -38,7 +38,7 @@ const DMapLabelEditor: React.FC<DMapLabelEditorProps> = ({
         >
           <ChevronLeft size={24} className="text-slate-800" />
         </button>
-        <h1 className="text-lg font-black text-slate-800 tracking-tight">Edit Label</h1>
+        <h1 className="text-lg font-extrabold text-slate-800 tracking-tight">Edit Label</h1>
         <button
           onClick={handleSave}
           className="px-4 py-2 bg-[#3b82f6] text-white rounded-xl font-bold text-sm active:scale-[0.95] transition-all"
@@ -51,7 +51,7 @@ const DMapLabelEditor: React.FC<DMapLabelEditorProps> = ({
       <div className="flex-1 px-4 py-6">
         {/* Label Input */}
         <div className="bg-white rounded-2xl border border-slate-100 p-6 mb-4">
-          <label className="text-[11px] font-black uppercase tracking-tight text-slate-400 block mb-3">
+          <label className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 block mb-3">
             Annotation Label
           </label>
           <input
@@ -60,7 +60,7 @@ const DMapLabelEditor: React.FC<DMapLabelEditorProps> = ({
             onChange={handleChange}
             placeholder="A01"
             maxLength={3}
-            className="w-full text-center text-4xl font-black text-slate-800 bg-slate-50 rounded-xl py-6 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/20 uppercase"
+            className="w-full text-center text-4xl font-extrabold text-slate-800 bg-slate-50 rounded-xl py-6 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/20 uppercase"
             autoFocus
           />
           <p className="text-center text-[11px] text-slate-400 font-medium mt-3">
@@ -83,14 +83,14 @@ const DMapLabelEditor: React.FC<DMapLabelEditorProps> = ({
 
         {/* Preview */}
         <div className="mt-6">
-          <label className="text-[11px] font-black uppercase tracking-tight text-slate-400 block mb-3 px-2">
+          <label className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 block mb-3 px-2">
             Preview
           </label>
           <div className="bg-slate-100 rounded-2xl p-8 flex items-center justify-center">
             <div className="relative">
               {/* Pin preview */}
               <div className="px-4 py-2 rounded-lg bg-blue-500 shadow-lg">
-                <span className="text-lg font-black text-white">
+                <span className="text-lg font-extrabold text-white">
                   {label || '???'}
                 </span>
               </div>

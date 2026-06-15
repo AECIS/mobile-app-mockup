@@ -68,7 +68,7 @@ const StickyHeader = memo(({
           className="w-8 h-8 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-sm relative active:bg-slate-50 dark:active:bg-slate-700 transition-colors flex-shrink-0"
         >
           <Bell size={18} className="text-slate-600 dark:text-slate-300" />
-          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 bg-[#3b82f6] text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm">
+          <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-[16px] px-0.5 bg-[#3b82f6] text-white text-[8px] font-extrabold rounded-full flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm">
             3
           </span>
         </button>

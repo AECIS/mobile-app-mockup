@@ -170,13 +170,13 @@ export const AssigneeSelector: React.FC<AssigneeSelectorProps> = ({
                 <div key={stakeholder.id}>
                   {/* Stakeholder group header - Sticky */}
                   <div className="sticky top-0 bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm z-10 flex items-center gap-2.5 px-2 py-2.5 -mx-1 rounded-xl">
-                    <span className="bg-[#3b82f6]/10 text-[#3b82f6] text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-tight">
+                    <span className="bg-[#3b82f6]/10 text-[#3b82f6] text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-tight">
                       {stakeholder.abbreviation}
                     </span>
                     <h2 className="text-[12px] font-bold text-slate-600 uppercase tracking-wide">
                       {stakeholder.name}
                     </h2>
-                    <span className="text-[10px] font-black uppercase tracking-tight text-slate-300">
+                    <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-300">
                       {members.length} {members.length === 1 ? 'member' : 'members'}
                     </span>
                   </div>

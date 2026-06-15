@@ -157,21 +157,21 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
           <>
             {/* Private Badge */}
             {(item.visibility === 'private' || item.visibility === 'both') && (
-              <span className="inline-flex items-center gap-1 text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wide bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+              <span className="inline-flex items-center gap-1 text-[9px] font-extrabold px-2 py-1 rounded-full uppercase tracking-wide bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
                 <Lock size={9} />
                 Private
               </span>
             )}
             {/* Restricted Badge */}
             {(item.visibility === 'restricted' || item.visibility === 'both') && (
-              <span className="inline-flex items-center gap-1 text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wide bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400">
+              <span className="inline-flex items-center gap-1 text-[9px] font-extrabold px-2 py-1 rounded-full uppercase tracking-wide bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400">
                 <EyeOff size={9} />
                 Restricted
               </span>
             )}
             {/* Status Badge - solid with alpha background */}
             <span
-              className="inline-flex text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wide"
+              className="inline-flex text-[9px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide"
               style={{ color: statusColor, backgroundColor: `${statusColor}20` }}
             >
               {statusLabel}
@@ -193,8 +193,8 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
         <div className="px-4 pt-4" style={{ paddingBottom: 'max(7rem, calc(env(safe-area-inset-bottom) + 7rem))' }}>
 
           {/* Ref No + Title */}
-          <h1 className="text-xl font-black text-slate-800 dark:text-slate-100 leading-tight mb-2">
-            <span className="font-black text-slate-500">#{item.refNo}</span>
+          <h1 className="text-xl font-extrabold text-slate-800 dark:text-slate-100 leading-tight mb-2">
+            <span className="font-extrabold text-slate-500">#{item.refNo}</span>
             <span className="text-slate-300 dark:text-slate-600 mx-2">|</span>
             {item.title}
           </h1>
@@ -237,16 +237,16 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500">Attachments</span>
+                  <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500">Attachments</span>
                   <div className="flex items-center gap-1.5">
                     {mediaAttachments.length > 0 && (
-                      <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                      <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center gap-1">
                         <ImageIcon size={9} />
                         {mediaAttachments.length}
                       </span>
                     )}
                     {documentAttachments.length > 0 && (
-                      <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                      <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex items-center gap-1">
                         <FileText size={9} />
                         {documentAttachments.length}
                       </span>
@@ -285,7 +285,7 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80" />
                             <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm px-2.5 py-1 rounded-full flex items-center gap-1.5">
                               <ImageIcon size={10} className="text-white" />
-                              <span className="text-[9px] font-black text-white">{idx + 1}/{mediaAttachments.length}</span>
+                              <span className="text-[9px] font-extrabold text-white">{idx + 1}/{mediaAttachments.length}</span>
                             </div>
                             <div className="absolute bottom-0 inset-x-0 p-3">
                               <p className="text-[10px] font-bold text-white/95 truncate">{photo.name}</p>
@@ -326,7 +326,7 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
                         <div className="min-w-0 flex-1">
                           <p className="text-[11px] font-bold text-slate-700 dark:text-slate-200 truncate group-hover:text-[#3b82f6] transition-colors">{att.name}</p>
                           <div className="flex items-center gap-2">
-                            <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ${typeConfig.bg} ${typeConfig.text}`}>
+                            <span className={`text-[8px] font-extrabold px-1.5 py-0.5 rounded ${typeConfig.bg} ${typeConfig.text}`}>
                               {typeConfig.label}
                             </span>
                             {att.size && <span className="text-[9px] text-slate-400 dark:text-slate-500">{att.size}</span>}
@@ -346,7 +346,7 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
             onClick={() => setShowDetails(!showDetails)}
             className="w-full flex items-center justify-between py-3 px-1 mb-2 active:scale-[0.98] transition-all"
           >
-            <span className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500">Details</span>
+            <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500">Details</span>
             <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
               {showDetails ? <ChevronUp size={12} className="text-slate-500 dark:text-slate-400" /> : <ChevronDown size={12} className="text-slate-500 dark:text-slate-400" />}
             </div>
@@ -409,8 +409,8 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
           <div className="flex items-center gap-3 mb-3">
             <div className="h-px flex-1 bg-slate-200/60 dark:bg-slate-700" />
             <div className="flex items-center gap-2">
-              <span className="text-[9px] font-black uppercase tracking-widest text-slate-300 dark:text-slate-600">Activity & Comments</span>
-              <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
+              <span className="text-[9px] font-extrabold uppercase tracking-widest text-slate-300 dark:text-slate-600">Activity & Comments</span>
+              <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400">
                 {stream.length}
               </span>
             </div>

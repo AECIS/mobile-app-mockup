@@ -156,7 +156,7 @@ const MapSection: React.FC<{
             size={14}
             className={`text-slate-400 transition-transform ${isExpanded ? '' : '-rotate-90'}`}
           />
-          <span className="text-[11px] font-black uppercase tracking-tight text-slate-500">
+          <span className="text-[11px] font-extrabold uppercase tracking-tight text-slate-500">
             {section.title}
           </span>
           <span className="text-[10px] font-bold text-slate-300 bg-slate-100 px-1.5 py-0.5 rounded">
@@ -313,7 +313,7 @@ const DMapList: React.FC<DMapListProps> = ({ onClose, onSelectMap }) => {
           >
             <Filter size={18} />
             {activeFilters.size > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-white text-[#3b82f6] text-[9px] font-black rounded-full flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-white text-[#3b82f6] text-[9px] font-extrabold rounded-full flex items-center justify-center">
                 {activeFilters.size}
               </span>
             )}
@@ -332,7 +332,7 @@ const DMapList: React.FC<DMapListProps> = ({ onClose, onSelectMap }) => {
         >
           {/* Summary */}
           <div className="flex items-center justify-between px-1 mb-4">
-            <span className="text-[10px] font-black uppercase tracking-tight text-slate-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400">
               {filteredMaps.length} map{filteredMaps.length !== 1 ? 's' : ''}
             </span>
             {activeFilters.size > 0 && (

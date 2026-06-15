@@ -59,7 +59,7 @@ const DetailSection: React.FC<DetailSectionProps> = ({ title, icon: Icon, childr
       >
         <div className="flex items-center gap-2">
           <div className="text-blue-500"><Icon size={18} /></div>
-          <h2 className="text-sm font-black text-slate-800 dark:text-slate-100 uppercase tracking-wider">{title}</h2>
+          <h2 className="text-sm font-extrabold text-slate-800 dark:text-slate-100 uppercase tracking-wider">{title}</h2>
         </div>
         <ChevronDown size={18} className={`text-slate-300 dark:text-slate-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -84,7 +84,7 @@ const ProjectDetails: React.FC = () => {
         <div className="px-6 py-4 border-b border-slate-50 dark:border-slate-700/60 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Camera size={18} className="text-blue-500" />
-            <h2 className="text-sm font-black text-slate-800 dark:text-slate-100 uppercase tracking-wider">Site Gallery</h2>
+            <h2 className="text-sm font-extrabold text-slate-800 dark:text-slate-100 uppercase tracking-wider">Site Gallery</h2>
           </div>
         </div>
         <div className="p-4 overflow-x-auto no-scrollbar flex gap-3">

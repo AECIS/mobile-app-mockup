@@ -249,7 +249,7 @@ export const DTagSelector: React.FC<DTagSelectorProps> = ({
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
             <h1 className="text-base font-bold text-slate-800 dark:text-slate-100 tracking-tight truncate">DTags</h1>
             {selected.length > 0 && (
-              <span className="bg-[#3b82f6] text-white text-[9px] font-black w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0">
+              <span className="bg-[#3b82f6] text-white text-[9px] font-extrabold w-5 h-5 flex items-center justify-center rounded-full flex-shrink-0">
                 {selected.length}
               </span>
             )}
@@ -329,7 +329,7 @@ export const DTagSelector: React.FC<DTagSelectorProps> = ({
             {selected.length >= 2 && (
               <button
                 onClick={() => onSelectionChange([])}
-                className="text-[10px] font-black uppercase tracking-tight text-slate-400 whitespace-nowrap px-2 min-h-[32px] flex items-center active:text-[#3b82f6] transition-colors flex-shrink-0"
+                className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 whitespace-nowrap px-2 min-h-[32px] flex items-center active:text-[#3b82f6] transition-colors flex-shrink-0"
               >
                 Clear all
               </button>
@@ -472,7 +472,7 @@ export const DTagSelector: React.FC<DTagSelectorProps> = ({
                           className="flex items-center gap-1.5 min-w-[56px] min-h-[44px] justify-center px-3 mr-1 bg-slate-50 dark:bg-slate-700 rounded-xl active:bg-slate-100 active:scale-[0.98] transition-all flex-shrink-0"
                           aria-label={`View ${node.children?.length ?? 0} items in ${node.label}`}
                         >
-                          <span className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/50 px-2 py-0.5 rounded-full tabular-nums">
+                          <span className="text-[10px] font-extrabold text-indigo-500 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/50 px-2 py-0.5 rounded-full tabular-nums">
                             {node.children?.length ?? 0}
                           </span>
                           <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -511,7 +511,7 @@ export const DTagSelector: React.FC<DTagSelectorProps> = ({
               {/* Location info */}
               {currentPath.length > 0 && (
                 <div className="mb-4 px-3 py-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
-                  <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-1">Creating in</p>
+                  <p className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-1">Creating in</p>
                   <p className="text-sm font-medium text-slate-600 dark:text-slate-300">
                     {currentPath.map(n => n.label).join(' › ')}
                   </p>
@@ -520,7 +520,7 @@ export const DTagSelector: React.FC<DTagSelectorProps> = ({
 
               {/* Name field */}
               <div className="mb-4">
-                <label className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 block">
+                <label className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 block">
                   Name <span className="text-red-400">*</span>
                 </label>
                 <input
@@ -536,7 +536,7 @@ export const DTagSelector: React.FC<DTagSelectorProps> = ({
 
               {/* Label field */}
               <div className="mb-5">
-                <label className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 block">
+                <label className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 block">
                   Label <span className="text-red-400">*</span>
                 </label>
                 <input

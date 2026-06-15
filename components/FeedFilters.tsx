@@ -275,7 +275,7 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
             </div>
             <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">{config.label}</h1>
             {selected.length > 0 && (
-              <span className="bg-[#3b82f6] text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+              <span className="bg-[#3b82f6] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                 {selected.length}
               </span>
             )}
@@ -472,7 +472,7 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
             <Filter size={18} className="text-slate-600 dark:text-slate-300" />
             <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">Filters</h1>
             {totalActive > 0 && (
-              <span className="bg-[#3b82f6] text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+              <span className="bg-[#3b82f6] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                 {totalActive}
               </span>
             )}
@@ -497,7 +497,7 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
           {/* Current Preset - editable name + save + open preset list */}
           <section>
             <div className="flex items-center justify-between mb-3 px-1">
-              <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500">
+              <p className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500">
                 Current Preset
               </p>
               <button
@@ -523,7 +523,7 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
               <button
                 onClick={handleSavePreset}
                 disabled={!presetName.trim() || totalActive === 0}
-                className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-tight transition-all active:scale-95 flex-shrink-0 ${
+                className={`px-3 py-2 rounded-xl text-[11px] font-extrabold uppercase tracking-tight transition-all active:scale-95 flex-shrink-0 ${
                   presetName.trim() && totalActive > 0
                     ? 'bg-[#3b82f6] text-white'
                     : 'bg-slate-100 dark:bg-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed'
@@ -539,7 +539,7 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
 
           {/* Section: Shared Filters */}
           <section>
-            <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-3 px-1">
+            <p className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-3 px-1">
               Filter by
             </p>
             <div className="space-y-2">
@@ -570,7 +570,7 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
                     </div>
                     <div className="flex items-center gap-2">
                       {count > 0 && (
-                        <span className="w-6 h-6 rounded-full bg-[#3b82f6] text-white text-[10px] font-black flex items-center justify-center">
+                        <span className="w-6 h-6 rounded-full bg-[#3b82f6] text-white text-[10px] font-extrabold flex items-center justify-center">
                           {count}
                         </span>
                       )}
@@ -584,7 +584,7 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
 
           {/* Section: Date Range */}
           <section>
-            <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-3 px-1">
+            <p className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-3 px-1">
               Update Date
             </p>
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm">
@@ -603,7 +603,7 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
 
           {/* Section: Status (scoped to current feed type) */}
           <section>
-            <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-3 px-1">
+            <p className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-3 px-1">
               Status
             </p>
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm">

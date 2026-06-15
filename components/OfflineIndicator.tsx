@@ -61,7 +61,7 @@ const OfflineIndicator: React.FC<OfflineIndicatorProps> = ({ compact = true }) =
 
         {/* Badge for pending count or storage percentage */}
         {(syncStatus.pendingUploads > 0 || isStorageCritical) && (
-          <span className={`absolute -top-1 -right-1 min-w-[16px] h-[16px] px-0.5 text-white text-[8px] font-black rounded-full flex items-center justify-center border-2 border-white dark:border-slate-800 ${
+          <span className={`absolute -top-1 -right-1 min-w-[16px] h-[16px] px-0.5 text-white text-[8px] font-extrabold rounded-full flex items-center justify-center border-2 border-white dark:border-slate-800 ${
             isStorageCritical ? 'bg-red-500' : 'bg-amber-500'
           }`}>
             {isStorageCritical ? storage.percentage : (syncStatus.pendingUploads > 9 ? '9+' : syncStatus.pendingUploads)}

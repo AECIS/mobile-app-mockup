@@ -37,7 +37,7 @@ const NavItem: React.FC<NavItemProps> = ({ tab, icon, activeIcon, label, isActiv
     <div className="relative">
       {isActive && activeIcon ? activeIcon : icon}
       {badge && badge > 0 && (
-        <span className="absolute -top-1 -right-1.5 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center">
+        <span className="absolute -top-1 -right-1.5 min-w-[16px] h-4 px-1 bg-red-500 text-white text-[9px] font-extrabold rounded-full flex items-center justify-center">
           {badge > 99 ? '99+' : badge}
         </span>
       )}

@@ -42,7 +42,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
   return (
     <div className={fullWidth ? 'w-full' : ''}>
       {label && (
-        <label className="block text-[11px] font-black uppercase tracking-tight text-slate-500 mb-2">
+        <label className="block text-[11px] font-extrabold uppercase tracking-tight text-slate-500 mb-2">
           {label}
           {props.required && <span className="text-red-400 ml-1">*</span>}
         </label>
@@ -132,7 +132,7 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(({
   return (
     <div className="w-full">
       {label && (
-        <label className="block text-[11px] font-black uppercase tracking-tight text-slate-500 mb-2">
+        <label className="block text-[11px] font-extrabold uppercase tracking-tight text-slate-500 mb-2">
           {label}
           {props.required && <span className="text-red-400 ml-1">*</span>}
         </label>

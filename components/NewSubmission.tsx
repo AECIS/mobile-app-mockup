@@ -95,7 +95,7 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
           >
             <ChevronLeft size={24} className="text-slate-800 dark:text-slate-200" />
           </button>
-          <h1 className="text-lg font-black text-slate-800 dark:text-slate-100 tracking-tight">New Submission</h1>
+          <h1 className="text-lg font-extrabold text-slate-800 dark:text-slate-100 tracking-tight">New Submission</h1>
           <button
             onClick={handleSubmit}
             disabled={!isFormValid}
@@ -117,8 +117,8 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
             {/* 1. TITLE */}
             <div className={`rounded-2xl px-4 py-3 mb-6 transition-all duration-200 ${title ? 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm' : 'bg-transparent'}`}>
               <div className="flex items-center gap-2">
-                <div className="text-[10px] font-black uppercase tracking-tight text-slate-300 dark:text-slate-600 mb-1">Title</div>
-                <span className="text-[8px] font-black text-red-400 uppercase tracking-tight mb-1">Required</span>
+                <div className="text-[10px] font-extrabold uppercase tracking-tight text-slate-300 dark:text-slate-600 mb-1">Title</div>
+                <span className="text-[8px] font-extrabold text-red-400 uppercase tracking-tight mb-1">Required</span>
               </div>
               <input
                 type="text"
@@ -149,7 +149,7 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
                     <Tag size={16} className="text-amber-500 dark:text-amber-400" />
                   </div>
                   <span>Type</span>
-                  <span className="text-[8px] font-black text-red-400 uppercase tracking-tight">Required</span>
+                  <span className="text-[8px] font-extrabold text-red-400 uppercase tracking-tight">Required</span>
                 </div>
                 <div className="flex items-center gap-2 min-w-0 ml-3">
                   {selectedType ? (
@@ -178,7 +178,7 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
                     <Compass size={16} className="text-teal-500 dark:text-teal-400" />
                   </div>
                   <span>Discipline</span>
-                  <span className="text-[8px] font-black text-red-400 uppercase tracking-tight">Required</span>
+                  <span className="text-[8px] font-extrabold text-red-400 uppercase tracking-tight">Required</span>
                 </div>
                 <div className="flex items-center gap-2 min-w-0 ml-3">
                   {selectedDiscipline ? (
@@ -207,7 +207,7 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
                     <Users size={16} className="text-blue-500 dark:text-blue-400" />
                   </div>
                   <span>Assignee</span>
-                  <span className="text-[8px] font-black text-red-400 uppercase tracking-tight">Required</span>
+                  <span className="text-[8px] font-extrabold text-red-400 uppercase tracking-tight">Required</span>
                 </div>
                 {selectedAssignee ? (
                   <div className="flex items-center gap-2.5">
@@ -251,8 +251,8 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
             {/* 3. DESCRIPTION */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-2 px-1">
-                <div className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500">Description</div>
-                <span className="text-[8px] font-black text-red-400 uppercase tracking-tight">Required</span>
+                <div className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500">Description</div>
+                <span className="text-[8px] font-extrabold text-red-400 uppercase tracking-tight">Required</span>
               </div>
               <div className="bg-[#fafafa] dark:bg-slate-800 rounded-2xl p-4 border border-slate-100/50 dark:border-slate-700 relative">
                 <textarea
@@ -276,9 +276,9 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
             {/* 4. ATTACHMENTS - Unified photos + files (matching NewIssue) */}
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-3 px-1">
-                <div className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500">Attachments</div>
+                <div className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500">Attachments</div>
                 {totalAttachments > 0 && (
-                  <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 uppercase">
+                  <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 uppercase">
                     {totalAttachments}
                   </span>
                 )}
@@ -358,7 +358,7 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
                     <File size={20} />
                   </button>
                 </div>
-                <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-tight">Tap to add photos or files</span>
+                <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-tight">Tap to add photos or files</span>
               </div>
             </div>
 
@@ -372,9 +372,9 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
                 className="w-full flex items-center justify-between min-h-[48px] px-1 mb-2 active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500">More Options</span>
+                  <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500">More Options</span>
                   {totalSelectedMasterData > 0 && (
-                    <span className="text-[9px] font-black px-2 py-0.5 rounded-full bg-[#3b82f6] text-white uppercase">
+                    <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-[#3b82f6] text-white uppercase">
                       {totalSelectedMasterData} selected
                     </span>
                   )}
@@ -428,7 +428,7 @@ const NewSubmission: React.FC<NewSubmissionProps> = ({ onClose }) => {
                     </div>
                     <div className="flex items-center gap-2">
                       {selectedDTags.length > 0 ? (
-                        <span className="text-[9px] font-black px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 uppercase">
+                        <span className="text-[9px] font-extrabold px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 uppercase">
                           {selectedDTags.length} selected
                         </span>
                       ) : (

@@ -83,7 +83,7 @@ const FieldCard: React.FC<{
         <div className={`w-7 h-7 rounded-xl ${iconBg} flex items-center justify-center flex-shrink-0`}>
           {icon}
         </div>
-        <h3 className="text-xs font-black uppercase tracking-tight text-slate-400">{title}</h3>
+        <h3 className="text-xs font-extrabold uppercase tracking-tight text-slate-400">{title}</h3>
       </div>
       {children}
     </div>
@@ -118,7 +118,7 @@ const TextareaField: React.FC<{
 }> = ({ label, value, onChange, placeholder }) => {
   return (
     <div className="space-y-2">
-      <span className="text-[10px] font-black uppercase tracking-tight text-slate-400">{label}</span>
+      <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400">{label}</span>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -254,7 +254,7 @@ const DailyReportDetail: React.FC<DailyReportDetailProps> = ({ report, onClose }
         onBack={onClose}
         center={
           <div className="text-center">
-            <h1 className="text-base font-black text-slate-800 dark:text-slate-100">{formattedDate}</h1>
+            <h1 className="text-base font-extrabold text-slate-800 dark:text-slate-100">{formattedDate}</h1>
             <p className="text-[10px] font-bold text-slate-400 uppercase">
               {report.type === 'general' ? 'General Report' : 'Material Report'} • {report.stakeholder}
             </p>
@@ -297,7 +297,7 @@ const DailyReportDetail: React.FC<DailyReportDetailProps> = ({ report, onClose }
             >
               {tab.label}
               {tab.count !== undefined && tab.count > 0 && (
-                <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-full ${
+                <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ${
                   activeTab === tab.id ? 'bg-[#3b82f6] text-white' : 'bg-slate-200 text-slate-500'
                 }`}>
                   {tab.count}
@@ -340,7 +340,7 @@ const DailyReportDetail: React.FC<DailyReportDetailProps> = ({ report, onClose }
                 <div className="space-y-4">
                   <NumberInput label="Quantity" value={incidentQty} onChange={setIncidentQty} />
                   <div className="space-y-2">
-                    <span className="text-[10px] font-black uppercase tracking-tight text-slate-400">Impact Level</span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400">Impact Level</span>
                     <ImpactSelector value={incidentImpact} onChange={(v) => setIncidentImpact(v as any)} />
                   </div>
                   <TextareaField
@@ -377,7 +377,7 @@ const DailyReportDetail: React.FC<DailyReportDetailProps> = ({ report, onClose }
               >
                 <div className="flex items-center gap-4">
                   <div className="flex-1">
-                    <span className="text-[10px] font-black uppercase tracking-tight text-slate-400 block mb-2">Start</span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 block mb-2">Start</span>
                     <input
                       type="time"
                       value={workStart}
@@ -387,7 +387,7 @@ const DailyReportDetail: React.FC<DailyReportDetailProps> = ({ report, onClose }
                   </div>
                   <span className="text-slate-300 font-bold mt-6">—</span>
                   <div className="flex-1">
-                    <span className="text-[10px] font-black uppercase tracking-tight text-slate-400 block mb-2">End</span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 block mb-2">End</span>
                     <input
                       type="time"
                       value={workEnd}

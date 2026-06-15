@@ -375,7 +375,7 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
               role="tab"
               aria-selected={activePresetId === null}
               className={`
-                flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-tight
+                flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] font-extrabold uppercase tracking-tight
                 whitespace-nowrap active:scale-95 transition-colors
                 ${activePresetId === null
                   ? 'bg-[#3b82f6] text-white'
@@ -394,7 +394,7 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
                 role="tab"
                 aria-selected={activePresetId === preset.id}
                 className={`
-                  flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-tight
+                  flex items-center gap-1.5 px-4 py-2 rounded-full text-[11px] font-extrabold uppercase tracking-tight
                   whitespace-nowrap active:scale-95 transition-colors
                   ${activePresetId === preset.id
                     ? 'bg-[#3b82f6] text-white'
@@ -418,7 +418,7 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
             }`}
           >
             <Filter size={14} />
-            <span className="text-[11px] font-black uppercase">
+            <span className="text-[11px] font-extrabold uppercase">
               {totalAdvancedFilters > 0 ? totalAdvancedFilters : 'Filter'}
             </span>
           </button>

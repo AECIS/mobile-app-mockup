@@ -73,7 +73,7 @@ const StatCard: React.FC<StatCardProps> = ({
       </div>
 
       <div className="flex items-baseline gap-2">
-        <span className="text-3xl font-black text-slate-800 dark:text-slate-100 tabular-nums">{value.toLocaleString()}</span>
+        <span className="text-3xl font-extrabold text-slate-800 dark:text-slate-100 tabular-nums">{value.toLocaleString()}</span>
         <div className={`flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold ${trendColors[trendDirection]}`}>
           {trendDirection === 'up' && <TrendingUp size={10} />}
           {trendDirection === 'down' && <TrendingDown size={10} />}

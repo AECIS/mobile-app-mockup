@@ -171,7 +171,7 @@ const Dashboard: React.FC = () => {
               <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tight">Requires immediate attention</p>
             </div>
           </div>
-          <span className="bg-red-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full animate-pulse">
+          <span className="bg-red-500 text-white text-[10px] font-extrabold px-2.5 py-1 rounded-full animate-pulse">
             {criticalItems.length}
           </span>
         </div>
@@ -194,7 +194,7 @@ const Dashboard: React.FC = () => {
                   <div className="flex items-center gap-1.5">
                     {/* Status Badge */}
                     <span
-                      className="inline-flex text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide"
+                      className="inline-flex text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wide"
                       style={{
                         color: statusConfig.color,
                         backgroundColor: `${statusConfig.color}20`
@@ -204,7 +204,7 @@ const Dashboard: React.FC = () => {
                     </span>
                     {/* Urgency Badge */}
                     <span
-                      className="inline-flex items-center gap-0.5 text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-wide"
+                      className="inline-flex items-center gap-0.5 text-[8px] font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wide"
                       style={{
                         color: urgencyConfig.color,
                         backgroundColor: `${urgencyConfig.color}15`,

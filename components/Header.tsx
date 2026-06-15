@@ -74,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({
           <Bell size={20} className="text-slate-600 dark:text-slate-300" />
           {notificationCount > 0 && (
             <span
-              className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-[#3b82f6] text-white text-[9px] font-black rounded-full flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm"
+              className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 bg-[#3b82f6] text-white text-[9px] font-extrabold rounded-full flex items-center justify-center border-2 border-white dark:border-slate-800 shadow-sm"
               aria-hidden="true"
             >
               {notificationCount > 9 ? '9+' : notificationCount}

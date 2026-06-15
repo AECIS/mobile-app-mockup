@@ -162,7 +162,7 @@ const ActionSheet: React.FC<ActionSheetProps> = ({ isOpen, onClose, itemType, cu
 
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-3 border-b border-slate-100 dark:border-slate-700">
-          <h3 className="text-lg font-black text-slate-800 dark:text-slate-100">Actions</h3>
+          <h3 className="text-lg font-extrabold text-slate-800 dark:text-slate-100">Actions</h3>
           <button
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full active:bg-slate-100 dark:active:bg-slate-700 transition-all"

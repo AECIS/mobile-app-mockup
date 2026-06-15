@@ -384,7 +384,7 @@ const SecuritySettings: React.FC<{
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
         {/* Password Section */}
         <section>
-          <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 px-1">
+          <p className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 px-1">
             Password
           </p>
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden">
@@ -406,7 +406,7 @@ const SecuritySettings: React.FC<{
 
         {/* Authentication Section */}
         <section>
-          <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 px-1">
+          <p className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 px-1">
             Authentication
           </p>
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden">
@@ -448,7 +448,7 @@ const SecuritySettings: React.FC<{
 
         {/* Session Section */}
         <section>
-          <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 px-1">
+          <p className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 px-1">
             Active Sessions
           </p>
           <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 overflow-hidden">
@@ -820,7 +820,7 @@ const HelpSupport: React.FC<{
 
         {/* Contact Info */}
         <div className="mt-4 bg-slate-50 dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700">
-          <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-3">
+          <p className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-3">
             Contact Information
           </p>
           <div className="space-y-2">

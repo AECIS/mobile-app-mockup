@@ -63,7 +63,7 @@ const DMapViewModeSheet: React.FC<DMapViewModeSheetProps> = ({
         <div className="px-4 py-4 max-h-[60vh] overflow-y-auto">
           {/* Group By */}
           <div className="mb-6">
-            <h4 className="text-[11px] font-black uppercase tracking-tight text-slate-400 px-2 mb-2">
+            <h4 className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 px-2 mb-2">
               Group By
             </h4>
             <div className="space-y-1">
@@ -92,7 +92,7 @@ const DMapViewModeSheet: React.FC<DMapViewModeSheetProps> = ({
 
           {/* Sort By */}
           <div className="mb-6">
-            <h4 className="text-[11px] font-black uppercase tracking-tight text-slate-400 px-2 mb-2">
+            <h4 className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 px-2 mb-2">
               Sort By
             </h4>
             <div className="space-y-1">
@@ -121,7 +121,7 @@ const DMapViewModeSheet: React.FC<DMapViewModeSheetProps> = ({
 
           {/* Order */}
           <div className="mb-6">
-            <h4 className="text-[11px] font-black uppercase tracking-tight text-slate-400 px-2 mb-2">
+            <h4 className="text-[11px] font-extrabold uppercase tracking-tight text-slate-400 px-2 mb-2">
               Order
             </h4>
             <div className="space-y-1">

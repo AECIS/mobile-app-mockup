@@ -111,7 +111,7 @@ const PhotoGallery: React.FC<PhotoGalleryProps> = ({ onClose, onSelectPhoto }) =
           <ChevronLeft size={24} className="text-slate-800" />
         </button>
         <div className="text-center">
-          <h1 className="text-base font-black text-slate-800">Location Photos</h1>
+          <h1 className="text-base font-extrabold text-slate-800">Location Photos</h1>
           <p className="text-[10px] font-bold text-slate-400">
             {totalPhotos} photo{totalPhotos !== 1 ? 's' : ''} • {locations.length} location{locations.length !== 1 ? 's' : ''}
           </p>

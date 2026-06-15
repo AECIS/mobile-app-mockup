@@ -253,7 +253,7 @@ const NotificationCard: React.FC<{
               {notification.attachment && (
                 <div className="flex items-center gap-2 mt-2 p-2.5 bg-slate-50 dark:bg-slate-700/50 rounded-xl">
                   <div className="w-8 h-8 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center">
-                    <span className="text-[8px] font-black text-red-500 dark:text-red-400">PDF</span>
+                    <span className="text-[8px] font-extrabold text-red-500 dark:text-red-400">PDF</span>
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-[11px] font-bold text-slate-700 dark:text-slate-200 truncate">
@@ -401,7 +401,7 @@ const Notifications: React.FC<NotificationsProps> = ({ onClose }) => {
             <Bell size={18} className="text-[#3b82f6]" />
             <h1 className="text-[17px] font-bold text-slate-800 dark:text-slate-100">Notifications</h1>
             {unreadCount > 0 && (
-              <span className="min-w-[20px] h-5 px-1.5 bg-[#3b82f6] text-white text-[10px] font-black rounded-full flex items-center justify-center">
+              <span className="min-w-[20px] h-5 px-1.5 bg-[#3b82f6] text-white text-[10px] font-extrabold rounded-full flex items-center justify-center">
                 {unreadCount}
               </span>
             )}

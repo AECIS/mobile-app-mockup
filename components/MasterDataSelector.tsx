@@ -142,16 +142,16 @@ export const MasterDataSelector: React.FC<MasterDataSelectorProps> = ({
 
         {/* Selected Count / Label */}
         <div className="mt-2.5 px-1 flex items-center gap-2">
-          <span className="text-[10px] font-black uppercase tracking-tight text-slate-400">
+          <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400">
             Selected
           </span>
           {selected.length > 0 ? (
             singleSelect ? (
-              <span className="bg-[#3b82f6] text-white text-[10px] font-black px-2.5 py-0.5 rounded-full truncate max-w-[200px]">
+              <span className="bg-[#3b82f6] text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full truncate max-w-[200px]">
                 {options.find(o => o.id === selected[0])?.label ?? '1'}
               </span>
             ) : (
-              <span className="bg-[#3b82f6] text-white text-[10px] font-black px-2 py-0.5 rounded-full">
+              <span className="bg-[#3b82f6] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                 {selected.length}
               </span>
             )

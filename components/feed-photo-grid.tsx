@@ -65,7 +65,7 @@ const PhotoGrid: React.FC<{ photos: FeedAttachment[]; maxShow?: number }> = ({ p
             <img src={p.url || `https://picsum.photos/seed/${p.id}/200/150`} alt={p.name} className={imgClass} loading="lazy" />
             {idx === 3 && remaining > 0 && (
               <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-[2px]">
-                <span className="text-white text-lg font-black">+{remaining}</span>
+                <span className="text-white text-lg font-extrabold">+{remaining}</span>
               </div>
             )}
           </div>

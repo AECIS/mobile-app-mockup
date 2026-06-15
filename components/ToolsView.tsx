@@ -97,7 +97,7 @@ const ToolRow: React.FC<{ tool: ToolItem; onClick?: () => void }> = ({ tool, onC
     </div>
     <div className="flex items-center gap-2 flex-shrink-0">
       {tool.count != null && (
-        <span className="text-[10px] font-black text-slate-300 dark:text-slate-500 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-md">
+        <span className="text-[10px] font-extrabold text-slate-300 dark:text-slate-500 bg-slate-50 dark:bg-slate-700 px-2 py-1 rounded-md">
           {tool.count}
         </span>
       )}

@@ -89,12 +89,12 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose }) => {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="bg-[#fafafa] dark:bg-slate-800 p-4 rounded-2xl border border-slate-50 dark:border-slate-700">
-              <div className="bg-red-500 w-8 h-10 rounded-sm mb-3 flex items-center justify-center text-[8px] text-white font-black">PDF</div>
+              <div className="bg-red-500 w-8 h-10 rounded-sm mb-3 flex items-center justify-center text-[8px] text-white font-extrabold">PDF</div>
               <p className="text-[11px] font-bold text-slate-800 dark:text-slate-100 mb-0.5">User-Research</p>
               <p className="text-[10px] text-slate-400 dark:text-slate-500">12.0 MB</p>
             </div>
             <div className="bg-[#fafafa] dark:bg-slate-800 p-4 rounded-2xl border border-slate-50 dark:border-slate-700">
-              <div className="bg-blue-500 w-8 h-10 rounded-sm mb-3 flex items-center justify-center text-[8px] text-white font-black">DOC</div>
+              <div className="bg-blue-500 w-8 h-10 rounded-sm mb-3 flex items-center justify-center text-[8px] text-white font-extrabold">DOC</div>
               <p className="text-[11px] font-bold text-slate-800 dark:text-slate-100 mb-0.5">Persona-Analysis</p>
               <p className="text-[10px] text-slate-400 dark:text-slate-500">12.0 MB</p>
             </div>

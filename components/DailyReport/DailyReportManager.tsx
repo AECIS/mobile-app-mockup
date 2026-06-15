@@ -136,7 +136,7 @@ const DailyReportManager: React.FC<DailyReportManagerProps> = ({ onClose }) => {
           <ChevronLeft size={24} className="text-slate-800" />
         </button>
         <div className="text-center">
-          <h1 className="text-lg font-black text-slate-800 tracking-tight">Report Settings</h1>
+          <h1 className="text-lg font-extrabold text-slate-800 tracking-tight">Report Settings</h1>
           <p className="text-[10px] font-bold text-slate-400">Turn on/off daily reports</p>
         </div>
         <div className="w-11" />
@@ -197,7 +197,7 @@ const DailyReportManager: React.FC<DailyReportManagerProps> = ({ onClose }) => {
         <div className="px-4 py-2 space-y-3" style={{ paddingBottom: 'max(2rem, calc(env(safe-area-inset-bottom) + 1rem))' }}>
           <div className="flex items-center gap-2 px-1 mb-2">
             <Users size={14} className="text-slate-400" />
-            <span className="text-[10px] font-black uppercase tracking-tight text-slate-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400">
               Stakeholders ({configs.length})
             </span>
           </div>

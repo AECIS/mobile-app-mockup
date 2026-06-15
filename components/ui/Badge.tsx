@@ -45,7 +45,7 @@ export const Badge: React.FC<BadgeProps> = ({
   return (
     <span
       className={`
-        inline-flex items-center font-black uppercase tracking-tight
+        inline-flex items-center font-extrabold uppercase tracking-tight
         border rounded-lg whitespace-nowrap
         ${VARIANT_STYLES[variant]}
         ${SIZE_STYLES[size]}
@@ -83,7 +83,7 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ color, children, size 
   return (
     <span
       className={`
-        inline-flex items-center font-black uppercase tracking-wider
+        inline-flex items-center font-extrabold uppercase tracking-wider
         rounded-full text-white whitespace-nowrap
         ${size === 'sm' ? 'text-[8px] px-2 py-0.5' : size === 'md' ? 'text-[9px] px-2.5 py-1' : 'text-[10px] px-3 py-1.5'}
       `}
@@ -115,7 +115,7 @@ export const CountBadge: React.FC<CountBadgeProps> = ({
   return (
     <span
       className={`
-        inline-flex items-center justify-center font-black text-white rounded-full
+        inline-flex items-center justify-center font-extrabold text-white rounded-full
         ${variant === 'primary' ? 'bg-[#3b82f6]' : 'bg-red-500'}
         ${size === 'sm' ? 'text-[8px] min-w-[16px] h-4 px-1' : 'text-[10px] min-w-[20px] h-5 px-1.5'}
       `}

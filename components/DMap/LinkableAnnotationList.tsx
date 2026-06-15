@@ -25,7 +25,7 @@ const IssueCard: React.FC<{
           className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{ backgroundColor: issue.statusColor }}
         >
-          <span className="text-xs font-black text-white">{issue.issueNo}</span>
+          <span className="text-xs font-extrabold text-white">{issue.issueNo}</span>
         </div>
 
         {/* Content */}
@@ -92,7 +92,7 @@ const LinkableAnnotationList: React.FC<LinkableAnnotationListProps> = ({
           <ChevronLeft size={24} className="text-slate-800" />
         </button>
         <div className="text-center">
-          <h1 className="text-lg font-black text-slate-800 tracking-tight">Link Issue</h1>
+          <h1 className="text-lg font-extrabold text-slate-800 tracking-tight">Link Issue</h1>
           <p className="text-[10px] font-bold text-slate-400">Select an issue to link</p>
         </div>
         <div className="w-11" />
@@ -133,7 +133,7 @@ const LinkableAnnotationList: React.FC<LinkableAnnotationListProps> = ({
         >
           {/* Count */}
           <div className="flex items-center gap-2 px-1 mb-2">
-            <span className="text-[10px] font-black uppercase tracking-tight text-slate-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400">
               Available Issues ({filteredIssues.length})
             </span>
           </div>

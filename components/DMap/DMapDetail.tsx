@@ -67,7 +67,7 @@ const AnnotationPin: React.FC<{
         {isDraft ? (
           <Loader2 size={14} className="text-white animate-spin mx-auto" />
         ) : (
-          <span className="text-[11px] font-black text-white drop-shadow-sm">
+          <span className="text-[11px] font-extrabold text-white drop-shadow-sm">
             {label || '?'}
           </span>
         )}
@@ -166,7 +166,7 @@ const MapLegend: React.FC<{
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <MapPin size={14} className="text-slate-500" />
-            <span className="text-[11px] font-black text-slate-700 uppercase tracking-tight">
+            <span className="text-[11px] font-extrabold text-slate-700 uppercase tracking-tight">
               {annotations.length} Pins
             </span>
           </div>

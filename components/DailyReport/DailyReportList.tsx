@@ -66,7 +66,7 @@ const DateBlock: React.FC<{ date: string }> = ({ date }) => {
   return (
     <div className="bg-[#3b82f6] text-white rounded-xl p-1.5 w-12 text-center flex-shrink-0">
       <div className="text-[10px] font-bold uppercase">{month}</div>
-      <div className="text-2xl font-black leading-tight">{day}</div>
+      <div className="text-2xl font-extrabold leading-tight">{day}</div>
       <div className="text-[9px] font-medium opacity-80">{weekday}</div>
     </div>
   );
@@ -82,7 +82,7 @@ const TypeBadge: React.FC<{ type: DailyReportType }> = ({ type }) => {
   const { bg, text, label } = config[type];
 
   return (
-    <span className={`text-[9px] font-black px-2 py-0.5 rounded-full uppercase ${bg} ${text}`}>
+    <span className={`text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase ${bg} ${text}`}>
       {label}
     </span>
   );
@@ -231,7 +231,7 @@ const DailyReportList: React.FC<DailyReportListProps> = ({ onClose, onSelectRepo
               <button
                 key={type}
                 onClick={() => setActiveType(type)}
-                className={`px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-tight transition-all active:scale-95 ${
+                className={`px-4 py-2 rounded-full text-[11px] font-extrabold uppercase tracking-tight transition-all active:scale-95 ${
                   activeType === type
                     ? 'bg-[#3b82f6] text-white'
                     : 'bg-white text-slate-400 border border-slate-100'
@@ -261,7 +261,7 @@ const DailyReportList: React.FC<DailyReportListProps> = ({ onClose, onSelectRepo
         <div className="px-4 py-4 space-y-3" style={{ paddingBottom: 'max(2rem, calc(env(safe-area-inset-bottom) + 1rem))' }}>
           {/* Summary */}
           <div className="flex items-center justify-between px-1 mb-2">
-            <span className="text-[10px] font-black uppercase tracking-tight text-slate-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400">
               {filteredReports.length} report{filteredReports.length !== 1 ? 's' : ''}
             </span>
             {selectedStakeholder !== 'all' && (

@@ -27,7 +27,7 @@ const DrawingCard: React.FC<{
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] font-black text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+            <span className="text-[10px] font-extrabold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
               {drawing.drawingNo}
             </span>
             <span
@@ -79,7 +79,7 @@ const CreatableDMapList: React.FC<CreatableDMapListProps> = ({ onClose, onSelect
           <ChevronLeft size={24} className="text-slate-800" />
         </button>
         <div className="text-center">
-          <h1 className="text-lg font-black text-slate-800 tracking-tight">Select Drawing</h1>
+          <h1 className="text-lg font-extrabold text-slate-800 tracking-tight">Select Drawing</h1>
           <p className="text-[10px] font-bold text-slate-400">Choose a drawing to create DMap</p>
         </div>
         <div className="w-11" />
@@ -120,7 +120,7 @@ const CreatableDMapList: React.FC<CreatableDMapListProps> = ({ onClose, onSelect
         >
           {/* Count */}
           <div className="flex items-center gap-2 px-1 mb-2">
-            <span className="text-[10px] font-black uppercase tracking-tight text-slate-400">
+            <span className="text-[10px] font-extrabold uppercase tracking-tight text-slate-400">
               Available Drawings ({filteredDrawings.length})
             </span>
           </div>

@@ -286,7 +286,7 @@ const DTagPicker: React.FC<DTagPickerProps> = ({ existingDTagIds, onSelect, onCl
                         className="flex items-center gap-1.5 min-w-[56px] min-h-[44px] justify-center px-3 mr-1 bg-slate-50 rounded-xl active:bg-slate-100 active:scale-[0.98] transition-all flex-shrink-0"
                         aria-label={`View ${node.children?.length ?? 0} items`}
                       >
-                        <span className="text-[10px] font-black text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full tabular-nums">
+                        <span className="text-[10px] font-extrabold text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-full tabular-nums">
                           {node.children?.length ?? 0}
                         </span>
                         <ChevronRight className="w-4 h-4 text-slate-400" />
@@ -686,7 +686,7 @@ const PhotoLocationManager: React.FC<PhotoLocationManagerProps> = ({
           <ChevronLeft size={24} className="text-slate-800" />
         </button>
         <div className="text-center">
-          <h1 className="text-base font-black text-slate-800">Photo Locations</h1>
+          <h1 className="text-base font-extrabold text-slate-800">Photo Locations</h1>
           <p className="text-[10px] font-bold text-slate-400">
             {locations.length} location{locations.length !== 1 ? 's' : ''} • {totalPhotos} photo{totalPhotos !== 1 ? 's' : ''}
           </p>

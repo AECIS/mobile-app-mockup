@@ -23,7 +23,7 @@ const FeedCard: React.FC<FeedCardProps> = ({ item, onSelect }) => {
     >
       {/* #refNo + title */}
       <h3 className="font-bold text-slate-800 dark:text-slate-100 text-[14px] leading-snug line-clamp-2">
-        <span className="font-black text-slate-400 dark:text-slate-500">#{item.refNo}</span>{' '}
+        <span className="font-extrabold text-slate-400 dark:text-slate-500">#{item.refNo}</span>{' '}
         {item.title}
       </h3>
 
