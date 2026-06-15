@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ChevronLeft, Search, Check, Filter, RotateCcw, Layers, AlertTriangle, FileInput, Compass, Package, Users, Calendar, Tag, ChevronRight, Bookmark, Plus, Trash2 } from 'lucide-react';
+import { X, ChevronLeft, Search, Check, Filter, RotateCcw, Layers, AlertTriangle, FileInput, Compass, Package, Users, Calendar, Tag, ChevronRight, Bookmark, Trash2 } from 'lucide-react';
 import { DTagSelector } from './DTagSelector';
 import { dTagTree } from './mockData';
 
@@ -20,6 +20,7 @@ interface FeedFiltersProps {
   onClose: () => void;
   filters: FeedFilterState;
   onApply: (filters: FeedFilterState) => void;
+  feedTypes?: string[]; // Scope the filter to the current feed (Issues vs Submittals)
   options: {
     types: string[];
     disciplines: string[];
@@ -45,8 +46,8 @@ const CATEGORY_CONFIG: Record<FilterCategory, { label: string; icon: React.React
   statuses: { label: 'Status', icon: <AlertTriangle size={16} />, color: 'bg-blue-50 text-blue-500' },
 };
 
-// Shared filter fields that apply to all types
-const SHARED_FILTER_FIELDS: FilterCategory[] = ['types', 'disciplines', 'packages', 'dtags', 'assignees'];
+// Shared filter fields (Type is omitted - the feed is already scoped by type)
+const SHARED_FILTER_FIELDS: FilterCategory[] = ['disciplines', 'packages', 'dtags', 'assignees'];
 
 // Status options by type
 const STATUS_OPTIONS_BY_TYPE: Record<string, { key: string; label: string; color: string }[]> = {
@@ -120,20 +121,29 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
   onClose,
   filters,
   onApply,
+  feedTypes,
   options,
 }) => {
   const [localFilters, setLocalFilters] = useState<FeedFilterState>(filters);
   const [activeCategory, setActiveCategory] = useState<FilterCategory | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [savedPresets, setSavedPresets] = useState<FilterPreset[]>(INITIAL_SAVED_PRESETS);
-  const [showSavePresetModal, setShowSavePresetModal] = useState(false);
-  const [newPresetName, setNewPresetName] = useState('');
+  const [presetName, setPresetName] = useState(''); // name of the current preset (editable)
+  const [showPresetList, setShowPresetList] = useState(false);
   const [activePresetId, setActivePresetId] = useState<string | null>(null);
   const [selectedDtags, setSelectedDtags] = useState<string[]>([]);
   const [showDtagSelector, setShowDtagSelector] = useState(false);
 
-  // Get selected types to determine which status sections to show
-  const selectedTypes = localFilters.types;
+  // Statuses scoped to the current feed type(s), de-duplicated by key
+  const scopeTypes = feedTypes && feedTypes.length > 0 ? feedTypes : ['Submittal', 'Issue', 'RFS'];
+  const scopedStatuses = (() => {
+    const seen = new Set<string>();
+    const out: { key: string; label: string; color: string }[] = [];
+    scopeTypes.forEach(t => (STATUS_OPTIONS_BY_TYPE[t] || []).forEach(s => {
+      if (!seen.has(s.key)) { seen.add(s.key); out.push(s); }
+    }));
+    return out;
+  })();
 
   if (!isOpen) return null;
 
@@ -156,18 +166,16 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
     }
   };
 
+  const EMPTY_FILTERS: FeedFilterState = {
+    types: [], disciplines: [], packages: [], creators: [],
+    assignees: [], statuses: [], severities: [], locations: [],
+  };
+
   const handleReset = () => {
-    setLocalFilters({
-      types: [],
-      disciplines: [],
-      packages: [],
-      creators: [],
-      assignees: [],
-      statuses: [],
-      severities: [],
-      locations: [],
-    });
+    setLocalFilters(EMPTY_FILTERS);
     setSelectedDtags([]);
+    setActivePresetId(null);
+    setPresetName('');
   };
 
   const handleApply = () => {
@@ -175,39 +183,38 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
     onClose();
   };
 
-  // Apply a preset
-  const handleApplyPreset = (preset: FilterPreset) => {
-    if (activePresetId === preset.id) {
-      // Deselect preset - reset filters
-      handleReset();
-      setActivePresetId(null);
-    } else {
-      // Apply preset filters
-      setLocalFilters(prev => ({
-        ...prev,
-        ...preset.filters,
-      }));
-      setActivePresetId(preset.id);
-    }
+  // Select a saved preset from the preset list -> load its filters + name
+  const handleSelectPreset = (preset: FilterPreset) => {
+    setLocalFilters({ ...EMPTY_FILTERS, ...preset.filters });
+    setActivePresetId(preset.id);
+    setPresetName(preset.name);
+    setShowPresetList(false);
   };
 
-  // Save current filters as a new preset
+  // Save current filter conditions as a preset (create new, or rename/update active)
   const handleSavePreset = () => {
-    if (!newPresetName.trim()) return;
+    const name = presetName.trim();
+    if (!name) return;
 
-    const newPreset: FilterPreset = {
-      id: `preset-${Date.now()}`,
-      name: newPresetName.trim(),
-      icon: <Bookmark size={14} />,
-      description: `Custom preset with ${totalActive} filters`,
-      filters: { ...localFilters },
-      color: '#64748b',
-    };
-
-    setSavedPresets(prev => [...prev, newPreset]);
-    setNewPresetName('');
-    setShowSavePresetModal(false);
-    setActivePresetId(newPreset.id);
+    if (activePresetId) {
+      // Update the active preset's name + filters
+      setSavedPresets(prev => prev.map(p =>
+        p.id === activePresetId
+          ? { ...p, name, filters: { ...localFilters }, description: `${totalActive} filters` }
+          : p
+      ));
+    } else {
+      const newPreset: FilterPreset = {
+        id: `preset-${Date.now()}`,
+        name,
+        icon: <Bookmark size={14} />,
+        description: `${totalActive} filters`,
+        filters: { ...localFilters },
+        color: '#64748b',
+      };
+      setSavedPresets(prev => [...prev, newPreset]);
+      setActivePresetId(newPreset.id);
+    }
   };
 
   // Delete a saved preset
@@ -215,16 +222,14 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
     setSavedPresets(prev => prev.filter(p => p.id !== presetId));
     if (activePresetId === presetId) {
       setActivePresetId(null);
+      setPresetName('');
     }
   };
 
-  const totalActive = Object.values(localFilters).reduce((sum, val) => {
+  const totalActive = Object.values(localFilters).reduce<number>((sum, val) => {
     if (Array.isArray(val)) return sum + val.length;
     return sum;
   }, 0) + selectedDtags.length;
-
-  // Check if current filters match a preset
-  const hasActiveFilters = totalActive > 0;
 
   // Category detail view
   if (activeCategory) {
@@ -367,6 +372,87 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
     );
   }
 
+  // Preset list view - select a previously saved preset
+  if (showPresetList) {
+    return (
+      <div className="fixed inset-0 bg-[#faf9f6] dark:bg-slate-900 z-[70] flex flex-col animate-in slide-in-from-right duration-200">
+        {/* Header */}
+        <div
+          className="flex-shrink-0 border-b border-slate-100 dark:border-slate-700 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md"
+          style={{ paddingTop: 'env(safe-area-inset-top)' }}
+        >
+          <div className="flex items-center px-4 py-3 gap-3">
+            <button
+              onClick={() => setShowPresetList(false)}
+              className="w-11 h-11 flex items-center justify-center bg-slate-50 dark:bg-slate-700 rounded-xl active:scale-[0.98] active:bg-slate-100 dark:active:bg-slate-600 transition-all -ml-1 cursor-pointer"
+            >
+              <ChevronLeft className="w-6 h-6 text-slate-800 dark:text-slate-100" />
+            </button>
+            <Bookmark size={18} className="text-slate-600 dark:text-slate-300" />
+            <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">Presets</h1>
+          </div>
+        </div>
+
+        {/* Preset List */}
+        <div className="flex-1 overflow-y-auto overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}>
+          <div className="px-4 py-4" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+            {savedPresets.length === 0 ? (
+              <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-8 text-center border border-dashed border-slate-200 dark:border-slate-700">
+                <Bookmark size={28} className="mx-auto mb-2 text-slate-300 dark:text-slate-600" />
+                <p className="text-[13px] font-bold text-slate-400 dark:text-slate-500">No saved presets yet</p>
+                <p className="text-[11px] text-slate-300 dark:text-slate-600 mt-1">Name and save your current filters to create one</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {savedPresets.map(preset => {
+                  const isActive = activePresetId === preset.id;
+                  return (
+                    <div
+                      key={preset.id}
+                      className={`flex items-center gap-3 p-3.5 rounded-2xl transition-all ${
+                        isActive
+                          ? 'bg-blue-50 dark:bg-blue-900/20 border-2 border-[#3b82f6]'
+                          : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm'
+                      }`}
+                    >
+                      <button
+                        onClick={() => handleSelectPreset(preset)}
+                        className="flex-1 flex items-center gap-3 min-w-0 active:scale-[0.98] transition-all cursor-pointer"
+                      >
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                          isActive ? 'bg-[#3b82f6] text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
+                        }`}>
+                          {preset.icon}
+                        </div>
+                        <div className="flex-1 text-left min-w-0">
+                          <p className={`text-[13px] font-bold ${isActive ? 'text-[#3b82f6]' : 'text-slate-700 dark:text-slate-200'}`}>
+                            {preset.name}
+                          </p>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{preset.description}</p>
+                        </div>
+                        {isActive && (
+                          <div className="w-6 h-6 rounded-full bg-[#3b82f6] flex items-center justify-center flex-shrink-0">
+                            <Check size={14} className="text-white" />
+                          </div>
+                        )}
+                      </button>
+                      <button
+                        onClick={() => handleDeletePreset(preset.id)}
+                        className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 active:scale-95 transition-all flex-shrink-0"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   // Main filter view
   return (
     <div className="fixed inset-0 bg-[#faf9f6] dark:bg-slate-900 z-[70] flex flex-col animate-in slide-in-from-right duration-200">
@@ -407,6 +493,49 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
         style={{ WebkitOverflowScrolling: 'touch' } as React.CSSProperties}
       >
         <div className="px-4 py-4 space-y-4" style={{ paddingBottom: 'max(6rem, calc(env(safe-area-inset-bottom) + 6rem))' }}>
+
+          {/* Current Preset - editable name + save + open preset list */}
+          <section>
+            <div className="flex items-center justify-between mb-3 px-1">
+              <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500">
+                Current Preset
+              </p>
+              <button
+                onClick={() => setShowPresetList(true)}
+                className="flex items-center gap-1 text-[10px] font-bold text-[#3b82f6] active:opacity-70 transition-opacity"
+              >
+                <Bookmark size={12} />
+                Presets
+                <ChevronRight size={12} />
+              </button>
+            </div>
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-3 border border-slate-100 dark:border-slate-700 shadow-sm flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 flex-shrink-0">
+                <Bookmark size={16} />
+              </div>
+              <input
+                type="text"
+                value={presetName}
+                onChange={(e) => setPresetName(e.target.value)}
+                placeholder="Name this filter…"
+                className="flex-1 min-w-0 bg-transparent text-[14px] font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-600 placeholder:font-medium focus:outline-none"
+              />
+              <button
+                onClick={handleSavePreset}
+                disabled={!presetName.trim() || totalActive === 0}
+                className={`px-3 py-2 rounded-xl text-[11px] font-black uppercase tracking-tight transition-all active:scale-95 flex-shrink-0 ${
+                  presetName.trim() && totalActive > 0
+                    ? 'bg-[#3b82f6] text-white'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed'
+                }`}
+              >
+                Save
+              </button>
+            </div>
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 px-1">
+              {totalActive > 0 ? `${totalActive} filter${totalActive === 1 ? '' : 's'} active` : 'No filters applied yet'}
+            </p>
+          </section>
 
           {/* Section: Shared Filters */}
           <section>
@@ -472,146 +601,43 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
             </div>
           </section>
 
-          {/* Section: Type-Specific Statuses */}
+          {/* Section: Status (scoped to current feed type) */}
           <section>
             <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-3 px-1">
-              Status by Type
+              Status
             </p>
-
-            {/* Type selection info */}
-            {selectedTypes.length > 0 ? (
-              <div className="flex items-center gap-2 mb-3 px-1">
-                <span className="text-[10px] text-slate-400 dark:text-slate-500">Showing statuses for:</span>
-                {selectedTypes.map(type => (
-                  <span key={type} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold border ${TYPE_COLORS[type]}`}>
-                    {TYPE_ICONS[type]}
-                    {type}
-                  </span>
-                ))}
-              </div>
-            ) : (
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 mb-3 px-1">Select a type above to see specific statuses</p>
-            )}
-
-            <div className="space-y-3">
-              {/* Show all type statuses when no type is selected, or only selected types */}
-              {(selectedTypes.length === 0 ? ['Submittal', 'Issue'] : selectedTypes).map(type => {
-                const statuses = STATUS_OPTIONS_BY_TYPE[type] || [];
-                if (statuses.length === 0) return null;
-
-                return (
-                  <div key={type} className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${TYPE_COLORS[type]?.split(' ')[0] || 'bg-slate-50 dark:bg-slate-700'}`}>
-                        {TYPE_ICONS[type]}
-                      </div>
-                      <span className="text-[12px] font-bold text-slate-700 dark:text-slate-200">{type} Statuses</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {statuses.map(status => {
-                        const isSelected = localFilters.statuses.includes(status.key);
-                        return (
-                          <button
-                            key={status.key}
-                            onClick={() => handleToggle('statuses', status.key)}
-                            className={`
-                              inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold
-                              transition-all active:scale-95 cursor-pointer
-                              ${isSelected
-                                ? 'shadow-sm'
-                                : 'bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500'
-                              }
-                            `}
-                            style={isSelected ? {
-                              backgroundColor: `${status.color}20`,
-                              color: status.color,
-                            } : {
-                              color: '#64748b'
-                            }}
-                          >
-                            {isSelected && <Check size={12} />}
-                            {status.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-
-          {/* Saved Filter Presets */}
-          <section>
-            <div className="flex items-center justify-between mb-3 px-1">
-              <p className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500">
-                Saved Filter Presets
-              </p>
-              {hasActiveFilters && (
-                <button
-                  onClick={() => setShowSavePresetModal(true)}
-                  className="flex items-center gap-1 text-[10px] font-bold text-[#3b82f6] active:opacity-70 transition-opacity"
-                >
-                  <Plus size={12} />
-                  Save Current
-                </button>
-              )}
-            </div>
-
-            {savedPresets.length === 0 ? (
-              <div className="bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 text-center border border-dashed border-slate-200 dark:border-slate-700">
-                <Bookmark size={24} className="mx-auto mb-2 text-slate-300 dark:text-slate-600" />
-                <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">No saved presets yet</p>
-                <p className="text-[10px] text-slate-300 dark:text-slate-600 mt-1">Apply filters and tap "Save Current"</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {savedPresets.map(preset => {
-                  const isActive = activePresetId === preset.id;
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-100 dark:border-slate-700 shadow-sm">
+              <div className="flex flex-wrap gap-2">
+                {scopedStatuses.map(status => {
+                  const isSelected = localFilters.statuses.includes(status.key);
                   return (
-                    <div
-                      key={preset.id}
-                      className={`flex items-center gap-3 p-3.5 rounded-2xl transition-all ${
-                        isActive
-                          ? 'bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-700 dark:to-slate-700/80 border-2 border-slate-400 dark:border-slate-500'
-                          : 'bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 shadow-sm'
-                      }`}
+                    <button
+                      key={status.key}
+                      onClick={() => handleToggle('statuses', status.key)}
+                      className={`
+                        inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold
+                        transition-all active:scale-95 cursor-pointer
+                        ${isSelected
+                          ? 'shadow-sm'
+                          : 'bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:border-slate-300 dark:hover:border-slate-500'
+                        }
+                      `}
+                      style={isSelected ? {
+                        backgroundColor: `${status.color}20`,
+                        color: status.color,
+                      } : {
+                        color: '#64748b'
+                      }}
                     >
-                      <button
-                        onClick={() => handleApplyPreset(preset)}
-                        className="flex-1 flex items-center gap-3 min-w-0 active:scale-[0.98] transition-all cursor-pointer"
-                      >
-                        <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                            isActive ? 'bg-slate-700 dark:bg-slate-600 text-white' : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400'
-                          }`}
-                        >
-                          {preset.icon}
-                        </div>
-                        <div className="flex-1 text-left min-w-0">
-                          <p className={`text-[13px] font-bold ${isActive ? 'text-slate-800 dark:text-slate-100' : 'text-slate-700 dark:text-slate-200'}`}>
-                            {preset.name}
-                          </p>
-                          <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate">{preset.description}</p>
-                        </div>
-                        {isActive && (
-                          <div className="w-6 h-6 rounded-full bg-slate-700 dark:bg-slate-600 flex items-center justify-center flex-shrink-0">
-                            <Check size={14} className="text-white" />
-                          </div>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleDeletePreset(preset.id)}
-                        className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-300 dark:text-slate-600 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 active:scale-95 transition-all flex-shrink-0"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </div>
+                      {isSelected && <Check size={12} />}
+                      {status.label}
+                    </button>
                   );
                 })}
               </div>
-            )}
+            </div>
           </section>
+
         </div>
       </div>
 
@@ -638,94 +664,6 @@ const FeedFilters: React.FC<FeedFiltersProps> = ({
         />
       )}
 
-      {/* Save Preset Modal */}
-      {showSavePresetModal && (
-        <div className="fixed inset-0 bg-black/50 z-[80] flex items-end justify-center animate-in fade-in duration-200">
-          <div
-            className="w-full max-w-md bg-white dark:bg-slate-800 rounded-t-[2rem] animate-in slide-in-from-bottom duration-300"
-            style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
-          >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-700">
-              <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Save Preset</h3>
-              <button
-                onClick={() => { setShowSavePresetModal(false); setNewPresetName(''); }}
-                className="w-9 h-9 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-700 active:bg-slate-200 dark:active:bg-slate-600 transition-colors"
-              >
-                <X size={16} className="text-slate-500 dark:text-slate-400" />
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="px-4 py-4">
-              <p className="text-[11px] text-slate-400 dark:text-slate-500 mb-3">
-                Save your current filter combination ({totalActive} filters) as a reusable preset.
-              </p>
-
-              <div className="mb-4">
-                <label className="text-[10px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2 block">
-                  Preset Name
-                </label>
-                <input
-                  type="text"
-                  value={newPresetName}
-                  onChange={(e) => setNewPresetName(e.target.value)}
-                  placeholder="e.g., My Critical Issues"
-                  autoFocus
-                  className="w-full px-4 py-3 rounded-xl bg-[#fafafa] dark:bg-slate-900 border border-slate-200 dark:border-slate-600 text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-300 dark:placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/20 focus:border-[#3b82f6] transition-all"
-                />
-              </div>
-
-              {/* Current filters preview */}
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-3 mb-4">
-                <p className="text-[9px] font-black uppercase tracking-tight text-slate-400 dark:text-slate-500 mb-2">Filters included:</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {localFilters.types.length > 0 && (
-                    <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-lg">
-                      {localFilters.types.length} types
-                    </span>
-                  )}
-                  {localFilters.disciplines.length > 0 && (
-                    <span className="text-[9px] font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/30 px-2 py-1 rounded-lg">
-                      {localFilters.disciplines.length} disciplines
-                    </span>
-                  )}
-                  {localFilters.assignees.length > 0 && (
-                    <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-lg">
-                      {localFilters.assignees.length} assignees
-                    </span>
-                  )}
-                  {localFilters.statuses.length > 0 && (
-                    <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 px-2 py-1 rounded-lg">
-                      {localFilters.statuses.length} statuses
-                    </span>
-                  )}
-                  {localFilters.creators.length > 0 && (
-                    <span className="text-[9px] font-bold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-900/30 px-2 py-1 rounded-lg">
-                      {localFilters.creators.length} creators
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <button
-                onClick={handleSavePreset}
-                disabled={!newPresetName.trim()}
-                className={`w-full py-3.5 rounded-xl text-sm font-bold transition-all active:scale-[0.98] ${
-                  newPresetName.trim()
-                    ? 'bg-[#3b82f6] text-white'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-300 dark:text-slate-600 cursor-not-allowed'
-                }`}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  <Bookmark size={16} />
-                  Save Preset
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

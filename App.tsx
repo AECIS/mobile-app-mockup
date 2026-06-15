@@ -346,7 +346,7 @@ const App: React.FC = () => {
               <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">{feedsScope}</h1>
             </header>
           </div>
-          <div className="px-3 pt-1 pb-8">
+          <div className="px-3 pb-8">
             <FeedsView
               onSelectFeed={setSelectedFeed}
               feedTypes={feedsScope === 'Issues' ? ['Issue'] : ['Submittal', 'RFS']}

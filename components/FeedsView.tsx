@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo } from 'react';
-import { Layers, AlertTriangle, Filter, X, Settings2 } from 'lucide-react';
+import { Layers, AlertTriangle, Filter } from 'lucide-react';
 import { FeedItem } from '../types';
 import FeedFilters, { FeedFilterState } from './FeedFilters';
 import FeedCard from './feed-card';
@@ -300,8 +300,7 @@ const FILTER_OPTIONS = {
 
 const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
   const [activePresetId, setActivePresetId] = useState<string | null>(null); // null = "All"
-  const [presets, setPresets] = useState<QuickPreset[]>(DEFAULT_PRESETS);
-  const [showPresetConfig, setShowPresetConfig] = useState(false);
+  const presets = DEFAULT_PRESETS;
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [advancedFilters, setAdvancedFilters] = useState<FeedFilterState>({
     types: [],
@@ -314,17 +313,10 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
     locations: [],
   });
 
-  const totalAdvancedFilters = Object.values(advancedFilters).reduce((sum, arr) => sum + arr.length, 0);
+  const totalAdvancedFilters = Object.values(advancedFilters).reduce<number>((sum, val) => sum + (Array.isArray(val) ? val.length : 0), 0);
 
   // Get presets that should show as quick tabs
   const visiblePresets = presets.filter(p => p.showInQuickTabs);
-
-  // Toggle preset visibility in quick tabs
-  const togglePresetVisibility = (presetId: string) => {
-    setPresets(prev => prev.map(p =>
-      p.id === presetId ? { ...p, showInQuickTabs: !p.showInQuickTabs } : p
-    ));
-  };
 
   const filteredItems = useMemo(() => {
     // Scope to requested feed types (e.g. Issues-only or Submittals-only)
@@ -373,33 +365,13 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
 
   return (
     <>
-      <div className="flex flex-col gap-4 pb-24">
-        {/* Header - Item count + Filter */}
-        <div className="flex items-center justify-between px-1">
-          <p className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide">
-            {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'}
-          </p>
-          <button
-            onClick={() => setIsFilterDrawerOpen(true)}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl transition-all active:scale-95 ${
-              totalAdvancedFilters > 0
-                ? 'bg-[#3b82f6] text-white'
-                : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-700'
-            }`}
-          >
-            <Filter size={14} />
-            <span className="text-[11px] font-black uppercase">
-              {totalAdvancedFilters > 0 ? totalAdvancedFilters : 'Filter'}
-            </span>
-          </button>
-        </div>
-
-        {/* Quick Filter Tabs - Sticky below project bar */}
+      <div className="pb-6">
+        {/* Quick filters + Filter button - single aligned row, sticky */}
         <div
-          className="sticky z-30 bg-[#faf9f6] dark:bg-slate-900 -mx-4 px-4 py-2 transition-colors"
+          className="sticky z-30 bg-[#faf9f6] dark:bg-slate-900 -mx-3 px-3 py-2 mb-3 flex items-center gap-2 transition-colors"
           style={{ top: '46px', transform: 'translateZ(0)', willChange: 'transform' }}
         >
-          <div className="flex gap-2 overflow-x-auto no-scrollbar" role="tablist" aria-label="Quick filters">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar flex-1" role="tablist" aria-label="Quick filters">
             {/* All tab - always visible */}
             <button
               onClick={() => setActivePresetId(null)}
@@ -437,16 +409,22 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
                 {preset.name}
               </button>
             ))}
-
-            {/* Config button to manage presets */}
-            <button
-              onClick={() => setShowPresetConfig(true)}
-              className="flex items-center justify-center w-9 h-9 rounded-full bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 text-slate-400 dark:text-slate-500 active:scale-95 flex-shrink-0 transition-colors"
-              aria-label="Configure quick filter tabs"
-            >
-              <Settings2 size={14} />
-            </button>
           </div>
+
+          {/* Filter button - aligned with quick filter pills */}
+          <button
+            onClick={() => setIsFilterDrawerOpen(true)}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-full whitespace-nowrap shrink-0 transition-colors active:scale-95 ${
+              totalAdvancedFilters > 0
+                ? 'bg-[#3b82f6] text-white'
+                : 'bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-100 dark:border-slate-700'
+            }`}
+          >
+            <Filter size={14} />
+            <span className="text-[11px] font-black uppercase">
+              {totalAdvancedFilters > 0 ? totalAdvancedFilters : 'Filter'}
+            </span>
+          </button>
         </div>
 
         {/* Feed List */}
@@ -483,97 +461,9 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
         onClose={() => setIsFilterDrawerOpen(false)}
         filters={advancedFilters}
         onApply={setAdvancedFilters}
+        feedTypes={feedTypes}
         options={FILTER_OPTIONS}
       />
-
-      {/* Preset Configuration Modal */}
-      {showPresetConfig && (
-        <div className="fixed inset-0 bg-black/50 z-[80] flex items-end justify-center animate-in fade-in duration-200">
-          <div
-            className="w-full max-w-md bg-white dark:bg-slate-800 rounded-t-[2rem] animate-in slide-in-from-bottom duration-300 transition-colors"
-            style={{ paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))' }}
-          >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 dark:border-slate-700">
-              <div className="flex items-center gap-2">
-                <Settings2 size={18} className="text-slate-600 dark:text-slate-300" />
-                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100">Quick Tabs</h3>
-              </div>
-              <button
-                onClick={() => setShowPresetConfig(false)}
-                className="w-9 h-9 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-700 active:bg-slate-200 dark:active:bg-slate-600 transition-colors"
-              >
-                <X size={16} className="text-slate-500 dark:text-slate-400" />
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="px-4 py-4 max-h-[60vh] overflow-y-auto">
-              <p className="text-[11px] text-slate-400 mb-4">
-                Choose which presets to show as quick filter tabs on the Feeds screen.
-              </p>
-
-              <div className="space-y-2">
-                {presets.map(preset => (
-                  <button
-                    key={preset.id}
-                    onClick={() => togglePresetVisibility(preset.id)}
-                    className={`w-full flex items-center gap-3 p-4 rounded-2xl transition-all active:scale-[0.98] cursor-pointer ${
-                      preset.showInQuickTabs
-                        ? 'bg-blue-50 border-2 border-[#3b82f6]'
-                        : 'bg-white border border-slate-100 hover:border-slate-200'
-                    }`}
-                  >
-                    {/* Toggle indicator */}
-                    <div
-                      className={`w-6 h-6 rounded-lg flex items-center justify-center border-2 transition-all ${
-                        preset.showInQuickTabs
-                          ? 'bg-[#3b82f6] border-[#3b82f6]'
-                          : 'bg-white border-slate-200'
-                      }`}
-                    >
-                      {preset.showInQuickTabs && (
-                        <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                        </svg>
-                      )}
-                    </div>
-
-                    {/* Preset icon */}
-                    <div
-                      className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                        preset.showInQuickTabs ? 'bg-[#3b82f6] text-white' : 'bg-slate-100 text-slate-500'
-                      }`}
-                    >
-                      {preset.icon}
-                    </div>
-
-                    {/* Preset info */}
-                    <div className="flex-1 text-left min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className={`text-[13px] font-bold ${preset.showInQuickTabs ? 'text-[#3b82f6]' : 'text-slate-700'}`}>
-                          {preset.name}
-                        </p>
-                        {preset.isPredefined && (
-                          <span className="text-[8px] font-black uppercase tracking-tight text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded">
-                            System
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-[10px] text-slate-400 truncate">{preset.description}</p>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {/* Info text */}
-              <p className="text-[10px] text-slate-300 mt-4 text-center">
-                Tap a preset to show/hide it from quick tabs
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };
