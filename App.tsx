@@ -94,7 +94,7 @@ const App: React.FC = () => {
   const [isAnalyticsReportOpen, setIsAnalyticsReportOpen] = useState(false);
 
   // New overlay states for tools that need wrapper
-  const [isFeedsOpen, setIsFeedsOpen] = useState(false);
+  const [feedsScope, setFeedsScope] = useState<'Issues' | 'Submittals' | null>(null);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
   const [isStorageOpen, setIsStorageOpen] = useState(false);
 
@@ -254,7 +254,8 @@ const App: React.FC = () => {
       return (
         <div className="px-3 pt-3 pb-8">
           <ToolsView
-            onOpenFeeds={() => setIsFeedsOpen(true)}
+            onOpenIssues={() => setFeedsScope('Issues')}
+            onOpenSubmittals={() => setFeedsScope('Submittals')}
             onOpenDailyReport={() => setIsDailyReportListOpen(true)}
             onOpenDMap={() => setIsDMapListOpen(true)}
             onOpenAnalyticsReport={() => setIsAnalyticsReportOpen(true)}
@@ -281,7 +282,7 @@ const App: React.FC = () => {
     isNewSubmissionOpen || isNewIssueOpen || isNewRFSOpen ||
     isDailyReportListOpen || selectedDailyReport ||
     isDMapListOpen || selectedDMap || isAnalyticsReportOpen ||
-    isFeedsOpen || isDirectoryOpen;
+    feedsScope || isDirectoryOpen;
 
   return (
     <div className="relative min-h-screen max-w-md mx-auto bg-[#faf9f6] dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors">
@@ -331,22 +332,25 @@ const App: React.FC = () => {
         <FeedDetail item={selectedFeed} onClose={() => setSelectedFeed(null)} />
       )}
 
-      {/* Feeds overlay */}
-      {isFeedsOpen && (
+      {/* Feeds overlay — scoped to Issues or Submittals (incl. RFS) */}
+      {feedsScope && (
         <div className="fixed inset-0 z-50 bg-[#faf9f6] dark:bg-slate-900 max-w-md mx-auto overflow-y-auto">
           <div className="sticky top-0 z-10 bg-[#faf9f6] dark:bg-slate-900" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
             <header className="flex items-center gap-3 px-3 pt-2 pb-1.5">
               <button
-                onClick={() => setIsFeedsOpen(false)}
+                onClick={() => setFeedsScope(null)}
                 className="w-8 h-8 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center border border-slate-100 dark:border-slate-700 shadow-sm active:bg-slate-50 dark:active:bg-slate-700 transition-colors"
               >
                 <ChevronLeft size={20} className="text-slate-600 dark:text-slate-300" />
               </button>
-              <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">Feeds</h1>
+              <h1 className="text-lg font-bold text-slate-800 dark:text-slate-100">{feedsScope}</h1>
             </header>
           </div>
           <div className="px-3 pt-1 pb-8">
-            <FeedsView onSelectFeed={setSelectedFeed} />
+            <FeedsView
+              onSelectFeed={setSelectedFeed}
+              feedTypes={feedsScope === 'Issues' ? ['Issue'] : ['Submittal', 'RFS']}
+            />
           </div>
         </div>
       )}

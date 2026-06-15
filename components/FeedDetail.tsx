@@ -6,6 +6,7 @@ import {
   Camera, Plus, FolderOpen
 } from 'lucide-react';
 import { FeedItem, FeedComment, FeedAttachment, StreamItem, getStatusConfig, SUBMITTAL_STATUS_CONFIG, ISSUE_STATUS_CONFIG } from '../types';
+import FeedStreamItem from './feed-stream-item';
 import ActionSheet from './ActionSheet';
 import ActionForm, { ActionFormType, ActionFormData } from './ActionForm';
 import { projectUsers } from './mockData';
@@ -16,42 +17,6 @@ interface FeedDetailProps {
 }
 
 const EDIT_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-
-// Submittal action labels with descriptions
-const SUBMITTAL_ACTION_CONFIG: Record<string, { label: string; description: string }> = {
-  submit: { label: 'submitted', description: 'Sent for review and approval' },
-  resubmit: { label: 'resubmitted', description: 'Submitted again with corrections' },
-  cancel: { label: 'cancelled', description: 'This submittal is no longer needed' },
-  obsolete: { label: 'marked as obsolete', description: 'No longer valid or applicable' },
-  supersede: { label: 'superseded', description: 'Replaced by a newer version' },
-  approve_a: { label: 'approved (A)', description: 'No comments. Proceed to construction' },
-  approve_b: { label: 'approved (B)', description: 'Approved with comments noted' },
-  reject_c: { label: 'rejected (C)', description: 'Revise and resubmit required' },
-  issue_to: { label: 'issued to stakeholders', description: 'Distributed for action' },
-  for_info: { label: 'marked for information (D)', description: 'For reference only' },
-};
-
-// Issue action labels with descriptions
-const ISSUE_ACTION_CONFIG: Record<string, { label: string; description: string }> = {
-  open: { label: 'opened issue', description: 'New issue raised for attention' },
-  reopen: { label: 'reopened issue', description: 'Issue needs more work' },
-  close: { label: 'closed issue', description: 'Resolution verified and confirmed' },
-  complete: { label: 'marked complete', description: 'Work done. Awaiting verification' },
-  cancel: { label: 'cancelled issue', description: 'No longer relevant' },
-};
-
-// Combined helper to get action label and description based on type
-const getActionConfig = (type: string, action: string): { label: string; description: string } => {
-  if (type === 'Issue') {
-    return ISSUE_ACTION_CONFIG[action] ?? { label: action, description: '' };
-  }
-  return SUBMITTAL_ACTION_CONFIG[action] ?? { label: action, description: '' };
-};
-
-// Legacy helper for backward compatibility
-const getActionLabel = (type: string, action: string): string => {
-  return getActionConfig(type, action).label;
-};
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
   Submittal: <Layers size={14} />,
@@ -466,98 +431,23 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
               // ===== ACTIVITY =====
               if (entry.kind === 'activity') {
                 const act = entry.data;
-                const actStatus = getStatusConfig(item.type, act.statusKey);
-                const actColor = actStatus.color;
-                const actLabel = actStatus.label;
-                const actionConfig = getActionConfig(item.type, act.action);
-
                 return (
-                  <div key={act.id} className="flex gap-3 items-start">
-                    {/* Avatar */}
-                    <img
-                      src={`https://picsum.photos/seed/${act.userId}/100`}
-                      className="w-9 h-9 rounded-full flex-shrink-0"
-                      alt=""
-                    />
-
-                    {/* Content */}
-                    <div className="flex-1 min-w-0">
-                      {/* Name · Timestamp */}
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100">{act.userName}</span>
-                        {act.userStakeholder && (
-                          <span className="text-[12px] text-slate-500 dark:text-slate-400">· {act.userStakeholder}</span>
-                        )}
-                        <span className="text-[12px] text-slate-400 dark:text-slate-500">· {act.timestamp}</span>
-                      </div>
-
-                      {/* Action Text + Status Badge */}
-                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                        <span className="text-[14px] text-slate-700 dark:text-slate-300">{actionConfig.label}</span>
-                        <span
-                          className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                          style={{
-                            color: actColor,
-                            backgroundColor: `${actColor}15`
-                          }}
-                        >
-                          {actLabel}
-                        </span>
-                      </div>
-
-                      {/* Action Description */}
-                      {actionConfig.description && (
-                        <p className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5">{actionConfig.description}</p>
-                      )}
-
-                      {/* Custom Description from activity */}
-                      {act.description && (
-                        <p className="text-[13px] text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">{act.description}</p>
-                      )}
-
-                      {/* Attachments */}
-                      {act.attachments && act.attachments.length > 0 && (
-                        <div className="mt-2 space-y-2">
-                          {/* Photo thumbnails */}
-                          {act.attachments.filter(a => a.type === 'image').length > 0 && (
-                            <div className="flex gap-2 flex-wrap">
-                              {act.attachments.filter(a => a.type === 'image').map(att => (
-                                <div key={att.id} className="w-20 h-20 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 cursor-pointer active:scale-95 transition-transform">
-                                  <img src={att.url || `https://picsum.photos/seed/${att.id}/100`} alt={att.name} className="w-full h-full object-cover" />
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                          {/* Document files */}
-                          {act.attachments.filter(a => a.type !== 'image').map(att => {
-                            const typeConfig = getFileTypeConfig(att.name);
-                            return (
-                              <div key={att.id} className="inline-flex items-center gap-2 bg-[#f0f2f5] dark:bg-slate-700 rounded-xl px-3 py-2 cursor-pointer active:scale-[0.98] transition-transform">
-                                <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${typeConfig.bg} ${typeConfig.text}`}>
-                                  <FileText size={12} />
-                                </div>
-                                <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-200">{att.name}</span>
-                                {att.size && <span className="text-[10px] text-slate-400 dark:text-slate-500">{att.size}</span>}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
-
-                      {/* Actions Row */}
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <button
-                          onClick={() => {
-                            setReplyTo({ id: act.id, userName: act.userName, text: '', timestamp: act.timestamp, timestampMs: 0 });
-                            inputRef.current?.focus();
-                          }}
-                          className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:underline active:text-slate-700 dark:active:text-slate-300 transition-colors"
-                        >
-                          Reply
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <FeedStreamItem
+                    key={act.id}
+                    entry={entry}
+                    itemType={item.type}
+                    footer={
+                      <button
+                        onClick={() => {
+                          setReplyTo({ id: act.id, userName: act.userName, text: '', timestamp: act.timestamp, timestampMs: 0 });
+                          inputRef.current?.focus();
+                        }}
+                        className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:underline active:text-slate-700 dark:active:text-slate-300 transition-colors"
+                      >
+                        Reply
+                      </button>
+                    }
+                  />
                 );
               }
 
@@ -566,128 +456,66 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
               const canModify = (now - comment.timestampMs) < EDIT_WINDOW_MS && comment.userId === 'm1';
               const isReply = !!comment.parentId;
               const parentComment = comment.parentId ? findParentComment(comment.parentId) : null;
+              const isEditing = editingComment === comment.id;
 
               return (
-                <div key={comment.id} className={`flex gap-3 items-start ${isReply ? 'ml-[52px]' : ''}`}>
-                  {/* Avatar - smaller for replies */}
-                  <img
-                    src={`https://picsum.photos/seed/${comment.userId}/100`}
-                    className={`rounded-full flex-shrink-0 ${isReply ? 'w-7 h-7' : 'w-9 h-9'}`}
-                    alt=""
-                  />
-
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    {/* Name · Timestamp */}
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[13px] font-bold text-slate-900 dark:text-slate-100">{comment.userName}</span>
-                      {comment.userStakeholder && (
-                        <span className="text-[12px] text-slate-500 dark:text-slate-400">· {comment.userStakeholder}</span>
-                      )}
-                      <span className="text-[12px] text-slate-400 dark:text-slate-500">· {comment.timestamp}</span>
-                      {comment.isEdited && (
-                        <span className="text-[12px] text-slate-400 dark:text-slate-500 italic">· edited</span>
+                <FeedStreamItem
+                  key={comment.id}
+                  entry={entry}
+                  itemType={item.type}
+                  isReply={isReply}
+                  replyToName={parentComment?.userName}
+                  bodyOverride={isEditing ? (
+                    <div className="mt-2">
+                      <textarea
+                        value={editText}
+                        onChange={(e) => setEditText(e.target.value)}
+                        className="w-full text-[14px] text-slate-700 dark:text-slate-200 bg-[#f0f2f5] dark:bg-slate-700 rounded-2xl p-3 outline-none border-none resize-none min-h-[60px]"
+                        autoFocus
+                      />
+                      <div className="flex gap-2 mt-2 justify-end">
+                        <button
+                          onClick={() => { setEditingComment(null); setEditText(''); }}
+                          className="text-[12px] font-bold text-slate-500 dark:text-slate-400 px-4 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={() => handleSaveEdit(comment.id)}
+                          className="text-[12px] font-bold text-white bg-[#3b82f6] px-4 py-1.5 rounded-full active:scale-95 transition-all"
+                        >
+                          Save
+                        </button>
+                      </div>
+                    </div>
+                  ) : undefined}
+                  footer={!isEditing ? (
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => { setReplyTo(comment); inputRef.current?.focus(); }}
+                        className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:underline active:text-slate-700 dark:active:text-slate-300 transition-colors"
+                      >
+                        Reply
+                      </button>
+                      {canModify && (
+                        <>
+                          <button
+                            onClick={() => { setEditingComment(comment.id); setEditText(comment.text); }}
+                            className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:underline active:text-slate-700 dark:active:text-slate-300 transition-colors"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:underline active:text-red-500 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </>
                       )}
                     </div>
-
-                    {/* Comment Text */}
-                    {editingComment === comment.id ? (
-                      <div className="mt-2">
-                        <textarea
-                          value={editText}
-                          onChange={(e) => setEditText(e.target.value)}
-                          className="w-full text-[14px] text-slate-700 dark:text-slate-200 bg-[#f0f2f5] dark:bg-slate-700 rounded-2xl p-3 outline-none border-none resize-none min-h-[60px]"
-                          autoFocus
-                        />
-                        <div className="flex gap-2 mt-2 justify-end">
-                          <button
-                            onClick={() => { setEditingComment(null); setEditText(''); }}
-                            className="text-[12px] font-bold text-slate-500 dark:text-slate-400 px-4 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            onClick={() => handleSaveEdit(comment.id)}
-                            className="text-[12px] font-bold text-white bg-[#3b82f6] px-4 py-1.5 rounded-full active:scale-95 transition-all"
-                          >
-                            Save
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <p className="text-[14px] text-slate-800 dark:text-slate-200 leading-relaxed mt-0.5">
-                        {parentComment && (
-                          <span className="text-[#3b82f6] font-semibold">{parentComment.userName} </span>
-                        )}
-                        {comment.text}
-                      </p>
-                    )}
-
-                    {/* Attachments */}
-                    {comment.attachments && comment.attachments.length > 0 && editingComment !== comment.id && (
-                      <div className="mt-2 space-y-2">
-                        {/* Image attachments */}
-                        {comment.attachments.filter(a => a.type === 'image').length > 0 && (
-                          <div className="flex gap-2 flex-wrap">
-                            {comment.attachments.filter(a => a.type === 'image').map(att => (
-                              <div key={att.id} className="w-20 h-20 rounded-xl overflow-hidden cursor-pointer active:scale-95 transition-transform border border-slate-200 dark:border-slate-700">
-                                <img
-                                  src={att.url || `https://picsum.photos/seed/${att.id}/200`}
-                                  alt={att.name}
-                                  className="w-full h-full object-cover"
-                                />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {/* Document attachments */}
-                        {comment.attachments.filter(a => a.type !== 'image').map(att => {
-                          const typeConfig = getFileTypeConfig(att.name);
-                          return (
-                            <div key={att.id} className="inline-flex items-center gap-2 bg-[#f0f2f5] dark:bg-slate-700 rounded-xl px-3 py-2 cursor-pointer active:scale-[0.98] transition-transform">
-                              <div className={`w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 ${typeConfig.bg} ${typeConfig.text}`}>
-                                <FileText size={12} />
-                              </div>
-                              <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-200">{att.name}</span>
-                              {att.size && <span className="text-[10px] text-slate-400 dark:text-slate-500">{att.size}</span>}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {/* Actions Row */}
-                    {editingComment !== comment.id && (
-                      <div className="flex items-center gap-3 mt-1.5">
-                        <button
-                          onClick={() => {
-                            setReplyTo(comment);
-                            inputRef.current?.focus();
-                          }}
-                          className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:underline active:text-slate-700 dark:active:text-slate-300 transition-colors"
-                        >
-                          Reply
-                        </button>
-                        {canModify && (
-                          <>
-                            <button
-                              onClick={() => { setEditingComment(comment.id); setEditText(comment.text); }}
-                              className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:underline active:text-slate-700 dark:active:text-slate-300 transition-colors"
-                            >
-                              Edit
-                            </button>
-                            <button
-                              onClick={() => handleDeleteComment(comment.id)}
-                              className="text-[12px] font-semibold text-slate-500 dark:text-slate-400 hover:underline active:text-red-500 transition-colors"
-                            >
-                              Delete
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
+                  ) : undefined}
+                />
               );
             })}
             <div ref={streamEndRef} />

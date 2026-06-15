@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Rss, Clipboard, Map, BarChart3, Users, HardDrive, ChevronRight } from 'lucide-react';
+import { AlertTriangle, Layers, Clipboard, Map, BarChart3, Users, HardDrive, ChevronRight } from 'lucide-react';
 
 interface ToolItem {
   id: string;
@@ -12,7 +12,8 @@ interface ToolItem {
 }
 
 interface ToolsViewProps {
-  onOpenFeeds?: () => void;
+  onOpenIssues?: () => void;
+  onOpenSubmittals?: () => void;
   onOpenDailyReport?: () => void;
   onOpenDMap?: () => void;
   onOpenAnalyticsReport?: () => void;
@@ -22,12 +23,20 @@ interface ToolsViewProps {
 
 const coreTools: ToolItem[] = [
   {
-    id: 'feeds',
-    name: 'Feeds',
-    desc: 'Issues, Submittals & RFS',
-    icon: <Rss size={22} />,
+    id: 'issues',
+    name: 'Issues',
+    desc: 'Defects & site issues',
+    icon: <AlertTriangle size={22} />,
+    iconBg: 'bg-rose-50 text-rose-500 dark:bg-rose-900/30 dark:text-rose-400',
+    count: 58,
+  },
+  {
+    id: 'submittals',
+    name: 'Submittals',
+    desc: 'Submittals & RFS',
+    icon: <Layers size={22} />,
     iconBg: 'bg-blue-50 text-blue-500 dark:bg-blue-900/30 dark:text-blue-400',
-    count: 142,
+    count: 84,
   },
   {
     id: 'daily-reports',
@@ -98,7 +107,8 @@ const ToolRow: React.FC<{ tool: ToolItem; onClick?: () => void }> = ({ tool, onC
 );
 
 const ToolsView: React.FC<ToolsViewProps> = ({
-  onOpenFeeds,
+  onOpenIssues,
+  onOpenSubmittals,
   onOpenDailyReport,
   onOpenDMap,
   onOpenAnalyticsReport,
@@ -106,7 +116,8 @@ const ToolsView: React.FC<ToolsViewProps> = ({
   onOpenStorage,
 }) => {
   const callbackMap: Record<string, (() => void) | undefined> = {
-    'feeds': onOpenFeeds,
+    'issues': onOpenIssues,
+    'submittals': onOpenSubmittals,
     'daily-reports': onOpenDailyReport,
     'dmaps': onOpenDMap,
     'analytics': onOpenAnalyticsReport,

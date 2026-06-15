@@ -1,8 +1,9 @@
 
 import React, { useState, useMemo } from 'react';
-import { Layers, AlertTriangle, FileInput, FileText, Image as ImageIcon, ChevronRight, Filter, X, Clock, MessageSquare, Lock, EyeOff, GitBranch, Send, CircleDot, Settings2 } from 'lucide-react';
-import { FeedItem, getStatusConfig, FeedAttachment } from '../types';
+import { Layers, AlertTriangle, Filter, X, Settings2 } from 'lucide-react';
+import { FeedItem } from '../types';
 import FeedFilters, { FeedFilterState } from './FeedFilters';
+import FeedCard from './feed-card';
 
 // Mock current user ID (in real app, this comes from auth context)
 const CURRENT_USER_ID = 'm1';
@@ -52,19 +53,8 @@ const DEFAULT_PRESETS: QuickPreset[] = [
 
 interface FeedsViewProps {
   onSelectFeed: (item: FeedItem) => void;
+  feedTypes?: FeedItem['type'][]; // Scope list to specific feed types (e.g. Issues vs Submittals)
 }
-
-const TYPE_ICON: Record<string, React.ReactNode> = {
-  Submittal: <Layers size={12} />,
-  Issue: <AlertTriangle size={12} />,
-  RFS: <FileInput size={12} />,
-};
-
-const TYPE_COLORS: Record<string, string> = {
-  Submittal: 'bg-slate-50 text-slate-600 border-slate-100',
-  Issue: 'bg-slate-50 text-slate-600 border-slate-100',
-  RFS: 'bg-slate-50 text-slate-600 border-slate-100',
-};
 
 const now = Date.now();
 
@@ -141,7 +131,12 @@ const feedItems: FeedItem[] = [
       { kind: 'comment', data: { id: 'c3', userId: 'm4', userName: 'Elena Rodriguez', userStakeholder: 'ME', text: 'Investigated the source. The leak is from a faulty joint in the chilled water pipe. Repair team dispatched.', timestamp: '3 hours ago', timestampMs: now - 10800000 } },
       { kind: 'activity', data: { id: 'act-3', userId: 'm2', userName: 'Kenneth Alanda', userStakeholder: 'MC', action: 'close', statusKey: 'Closed', timestamp: '1 hour ago', description: 'Issue resolved. Pipe joint repaired and pressure tested. No further leaks detected.', attachments: [
         { id: 'att-8', name: 'Repair_Completion_Report.pdf', type: 'pdf', size: '890 KB' },
-        { id: 'att-9', name: 'pressure_test_result.jpg', type: 'image', size: '1.2 MB', url: 'https://picsum.photos/seed/ptest1/400/300' },
+        { id: 'att-9', name: 'pressure_test_01.jpg', type: 'image', size: '1.2 MB', url: 'https://picsum.photos/seed/ptest1/400/300' },
+        { id: 'att-9b', name: 'pressure_test_02.jpg', type: 'image', size: '1.4 MB', url: 'https://picsum.photos/seed/ptest2/400/300' },
+        { id: 'att-9c', name: 'repair_detail_01.jpg', type: 'image', size: '1.6 MB', url: 'https://picsum.photos/seed/ptest3/400/300' },
+        { id: 'att-9d', name: 'repair_detail_02.jpg', type: 'image', size: '1.5 MB', url: 'https://picsum.photos/seed/ptest4/400/300' },
+        { id: 'att-9e', name: 'repair_detail_03.jpg', type: 'image', size: '1.3 MB', url: 'https://picsum.photos/seed/ptest5/400/300' },
+        { id: 'att-9f', name: 'site_after_repair.jpg', type: 'image', size: '1.7 MB', url: 'https://picsum.photos/seed/ptest6/400/300' },
       ] } },
     ],
   },
@@ -303,227 +298,7 @@ const FILTER_OPTIONS = {
   statuses: [...new Set(feedItems.map(i => i.status))],
 };
 
-
-// File type configuration with colors and icons
-const FILE_TYPE_CONFIG: Record<string, { bg: string; text: string; border: string; label: string }> = {
-  pdf: { bg: 'bg-slate-100', text: 'text-slate-500', border: 'border-l-slate-300', label: 'PDF' },
-  doc: { bg: 'bg-slate-100', text: 'text-slate-500', border: 'border-l-slate-300', label: 'DOC' },
-  docx: { bg: 'bg-slate-100', text: 'text-slate-500', border: 'border-l-slate-300', label: 'DOCX' },
-  xls: { bg: 'bg-slate-100', text: 'text-slate-500', border: 'border-l-slate-300', label: 'XLS' },
-  xlsx: { bg: 'bg-slate-100', text: 'text-slate-500', border: 'border-l-slate-300', label: 'XLSX' },
-  dwg: { bg: 'bg-slate-100', text: 'text-slate-500', border: 'border-l-slate-300', label: 'DWG' },
-  image: { bg: 'bg-slate-100', text: 'text-slate-500', border: 'border-l-slate-300', label: 'IMG' },
-};
-
-const getFileTypeConfig = (filename: string, type: string) => {
-  if (type === 'image') return FILE_TYPE_CONFIG.image;
-  const ext = filename.split('.').pop()?.toLowerCase() || '';
-  return FILE_TYPE_CONFIG[ext] || FILE_TYPE_CONFIG.pdf;
-};
-
-// Enhanced Photo Grid Component with responsive aspect-ratio
-// Layouts: 1 photo (hero), 2 photos (side-by-side), 3 photos (1 large + 2 stacked), 4+ photos (2x2 grid)
-const PhotoGrid: React.FC<{ photos: FeedAttachment[]; maxShow?: number }> = ({ photos, maxShow = 4 }) => {
-  if (photos.length === 0) return null;
-
-  const displayPhotos = photos.slice(0, maxShow);
-  const remaining = photos.length - maxShow;
-
-  // Single photo - full width hero with 16:9 aspect ratio
-  if (displayPhotos.length === 1) {
-    return (
-      <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-sm group cursor-pointer">
-        <div className="relative aspect-[16/9]">
-          <img
-            src={displayPhotos[0].url || `https://picsum.photos/seed/${displayPhotos[0].id}/400/225`}
-            alt={displayPhotos[0].name}
-            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-          {/* Bottom info bar */}
-          <div className="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between">
-            <p className="text-[10px] font-bold text-white/90 truncate max-w-[70%]">{displayPhotos[0].name}</p>
-            <div className="flex items-center gap-1 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-lg">
-              <ImageIcon size={10} className="text-white" />
-              <span className="text-[9px] font-black text-white">1</span>
-            </div>
-          </div>
-          {/* Tap to view indicator */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            <div className="bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full">
-              <span className="text-[10px] font-bold text-white">Tap to view</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 2 photos - side by side with 4:3 aspect each (balanced layout)
-  if (displayPhotos.length === 2) {
-    return (
-      <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-sm relative group cursor-pointer">
-        <div className="grid grid-cols-2 gap-0.5">
-          {displayPhotos.map((photo) => (
-            <div key={photo.id} className="relative aspect-[4/3] overflow-hidden">
-              <img
-                src={photo.url || `https://picsum.photos/seed/${photo.id}/200/150`}
-                alt={photo.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-              />
-              {/* Subtle gradient */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
-            </div>
-          ))}
-        </div>
-        {/* Photo count badge */}
-        <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg">
-          <ImageIcon size={10} className="text-white" />
-          <span className="text-[9px] font-black text-white">2</span>
-        </div>
-      </div>
-    );
-  }
-
-  // 3 photos - 1 large left + 2 stacked right (Instagram-style)
-  if (displayPhotos.length === 3) {
-    return (
-      <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-sm relative group cursor-pointer">
-        <div className="grid grid-cols-2 gap-0.5" style={{ aspectRatio: '16/9' }}>
-          {/* Large photo on left - takes full height */}
-          <div className="relative overflow-hidden row-span-2">
-            <img
-              src={displayPhotos[0].url || `https://picsum.photos/seed/${displayPhotos[0].id}/200/225`}
-              alt={displayPhotos[0].name}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/20 pointer-events-none" />
-          </div>
-          {/* 2 stacked photos on right */}
-          <div className="grid grid-rows-2 gap-0.5">
-            {displayPhotos.slice(1).map((photo) => (
-              <div key={photo.id} className="relative overflow-hidden">
-                <img
-                  src={photo.url || `https://picsum.photos/seed/${photo.id}/200/112`}
-                  alt={photo.name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-        {/* Photo count badge */}
-        <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg">
-          <ImageIcon size={10} className="text-white" />
-          <span className="text-[9px] font-black text-white">3</span>
-        </div>
-      </div>
-    );
-  }
-
-  // 4 photos - 2x2 balanced grid (clean, symmetric)
-  if (displayPhotos.length === 4 && remaining === 0) {
-    return (
-      <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-sm relative group cursor-pointer">
-        <div className="grid grid-cols-2 gap-0.5">
-          {displayPhotos.map((photo) => (
-            <div key={photo.id} className="relative aspect-[4/3] overflow-hidden">
-              <img
-                src={photo.url || `https://picsum.photos/seed/${photo.id}/200/150`}
-                alt={photo.name}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                loading="lazy"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-            </div>
-          ))}
-        </div>
-        {/* Photo count badge */}
-        <div className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg">
-          <ImageIcon size={10} className="text-white" />
-          <span className="text-[9px] font-black text-white">4</span>
-        </div>
-      </div>
-    );
-  }
-
-  // 5+ photos - 2x2 grid with +N overlay on last photo
-  return (
-    <div className="rounded-2xl overflow-hidden border border-slate-100 shadow-sm relative group cursor-pointer">
-      <div className="grid grid-cols-2 gap-0.5">
-        {displayPhotos.slice(0, 4).map((photo, idx) => (
-          <div key={photo.id} className="relative aspect-[4/3] overflow-hidden">
-            <img
-              src={photo.url || `https://picsum.photos/seed/${photo.id}/200/150`}
-              alt={photo.name}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              loading="lazy"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-            {/* Show +N overlay on last visible photo if more remain */}
-            {idx === 3 && remaining > 0 && (
-              <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-[2px]">
-                <div className="text-center">
-                  <span className="text-white text-xl font-black">+{remaining}</span>
-                  <p className="text-white/80 text-[9px] font-medium mt-0.5">more</p>
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-      {/* Photo count badge */}
-      <div className="absolute top-2.5 left-2.5 flex items-center gap-1 bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg">
-        <ImageIcon size={10} className="text-white" />
-        <span className="text-[9px] font-black text-white">{photos.length}</span>
-      </div>
-      {/* View all hint on hover */}
-      <div className="absolute bottom-2.5 right-2.5 opacity-0 group-hover:opacity-100 transition-opacity">
-        <div className="flex items-center gap-1 bg-white/90 backdrop-blur-sm px-2.5 py-1.5 rounded-lg shadow-sm">
-          <span className="text-[9px] font-bold text-slate-600">View all {photos.length}</span>
-          <ChevronRight size={10} className="text-slate-400" />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// File Badge Component for non-image attachments
-const FileBadges: React.FC<{ files: FeedAttachment[] }> = ({ files }) => {
-  if (files.length === 0) return null;
-
-  // Group files by type
-  const filesByType = files.reduce((acc, file) => {
-    const config = getFileTypeConfig(file.name, file.type);
-    const key = config.label;
-    if (!acc[key]) acc[key] = { config, count: 0 };
-    acc[key].count++;
-    return acc;
-  }, {} as Record<string, { config: typeof FILE_TYPE_CONFIG.pdf; count: number }>);
-
-  return (
-    <div className="flex gap-1.5 flex-wrap">
-      {Object.entries(filesByType).map(([type, { config, count }]) => (
-        <div
-          key={type}
-          className={`flex items-center gap-1.5 ${config.bg} ${config.text} px-2 py-1 rounded-lg border border-opacity-50`}
-          style={{ borderColor: 'currentColor' }}
-        >
-          <FileText size={11} />
-          <span className="text-[10px] font-black">{count}</span>
-          <span className="text-[9px] font-bold opacity-70">{type}</span>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed }) => {
+const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed, feedTypes }) => {
   const [activePresetId, setActivePresetId] = useState<string | null>(null); // null = "All"
   const [presets, setPresets] = useState<QuickPreset[]>(DEFAULT_PRESETS);
   const [showPresetConfig, setShowPresetConfig] = useState(false);
@@ -552,7 +327,8 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed }) => {
   };
 
   const filteredItems = useMemo(() => {
-    let items = feedItems;
+    // Scope to requested feed types (e.g. Issues-only or Submittals-only)
+    let items = feedTypes ? feedItems.filter(i => feedTypes.includes(i.type)) : feedItems;
 
     // Apply active preset filter
     if (activePresetId) {
@@ -580,7 +356,7 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed }) => {
     }
 
     return items;
-  }, [activePresetId, presets, advancedFilters]);
+  }, [activePresetId, presets, advancedFilters, feedTypes]);
 
   const clearAdvancedFilters = () => {
     setAdvancedFilters({
@@ -694,130 +470,9 @@ const FeedsView: React.FC<FeedsViewProps> = ({ onSelectFeed }) => {
               )}
             </div>
           ) : (
-            filteredItems.map((item) => {
-              // Get last activity from stream
-              const lastActivity = item.stream[item.stream.length - 1];
-              const lastActivityData = lastActivity?.data;
-
-              // Get attachments from LAST activity (not original submission)
-              const lastActivityAttachments = lastActivityData?.attachments || [];
-              const lastPhotos = lastActivityAttachments.filter((a: FeedAttachment) => a.type === 'image');
-
-              // Total counts (all attachments across all activities)
-              const allPhotos = item.attachments.filter(a => a.type === 'image');
-              const allFiles = item.attachments.filter(a => a.type !== 'image');
-
-              const commentCount = item.stream.filter(s => s.kind === 'comment').length;
-              const activityCount = item.stream.filter(s => s.kind === 'activity').length;
-              const statusConfig = getStatusConfig(item.type, item.status);
-
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => onSelectFeed(item)}
-                  aria-label={`${item.type}: ${item.title}`}
-                  className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm transition-all duration-200 active:scale-[0.98] hover:shadow-md hover:border-slate-200 dark:hover:border-slate-600 text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] focus-visible:ring-offset-2 cursor-pointer"
-                >
-                  {/* Row 1: Status + Visibility + Time - inline, no box */}
-                  <div className="flex items-center gap-2 mb-2">
-                    <span
-                      className="text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wide"
-                      style={{ color: statusConfig.color, backgroundColor: `${statusConfig.color}15` }}
-                    >
-                      {statusConfig.label}
-                    </span>
-                    {(item.visibility === 'private' || item.visibility === 'both') && (
-                      <Lock size={10} className="text-slate-400 dark:text-slate-500" />
-                    )}
-                    {(item.visibility === 'restricted' || item.visibility === 'both') && (
-                      <EyeOff size={10} className="text-slate-400 dark:text-slate-500" />
-                    )}
-                    {item.revision && item.revision > 1 && (
-                      <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 flex items-center gap-0.5">
-                        <GitBranch size={9} />
-                        R{item.revision}
-                      </span>
-                    )}
-                    <span className="text-[9px] text-slate-400 dark:text-slate-500 ml-auto flex items-center gap-1">
-                      <Clock size={9} />
-                      {item.createdAt}
-                    </span>
-                  </div>
-
-                  {/* Row 2: Title - prominent */}
-                  <h3 className="font-bold text-slate-800 dark:text-slate-100 text-[14px] leading-snug mb-1.5 line-clamp-2">
-                    <span className="font-black text-slate-500">#{item.refNo}</span>
-                    <span className="text-slate-200 dark:text-slate-600 mx-1">·</span>
-                    {item.title}
-                  </h3>
-
-                  {/* Row 3: Compact user flow - no background boxes */}
-                  <div className="flex items-center gap-1 text-[10px] text-slate-500 dark:text-slate-400 mb-2">
-                    <img
-                      src={`https://picsum.photos/seed/${item.createdBy.id}/100`}
-                      className="w-4 h-4 rounded-full"
-                      alt=""
-                    />
-                    <span className="font-medium">{item.createdBy.name.split(' ')[0]}</span>
-                    <span className="text-slate-300 dark:text-slate-600">→</span>
-                    <img
-                      src={`https://picsum.photos/seed/${item.assignee.id}/100`}
-                      className="w-4 h-4 rounded-full"
-                      alt=""
-                    />
-                    <span className="font-medium">{item.assignee.name.split(' ')[0]}</span>
-
-                    {/* Inline stats - no box */}
-                    <span className="text-slate-300 dark:text-slate-600 mx-1">·</span>
-                    <MessageSquare size={10} />
-                    <span>{activityCount + commentCount}</span>
-
-                    {/* CC count inline */}
-                    {item.ccRecipients && item.ccRecipients.length > 0 && (
-                      <>
-                        <span className="text-slate-300 dark:text-slate-600 mx-1">·</span>
-                        <Send size={10} />
-                        <span>{item.ccRecipients.length}</span>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Row 4: Latest activity text - simple, no box */}
-                  {lastActivityData && (lastActivity.kind === 'comment' ? lastActivityData.text : lastActivityData.description) && (
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 line-clamp-2 mb-2 leading-relaxed border-l-2 border-slate-200 dark:border-slate-600 pl-2.5">
-                      <span className="font-medium text-slate-600 dark:text-slate-300">{lastActivityData.userName.split(' ')[0]}:</span>{' '}
-                      {lastActivity.kind === 'comment' ? lastActivityData.text : lastActivityData.description}
-                    </p>
-                  )}
-
-                  {/* Row 5: Photos - clean grid, minimal chrome */}
-                  {lastPhotos.length > 0 && (
-                    <div className="mb-2">
-                      <PhotoGrid photos={lastPhotos} maxShow={4} />
-                    </div>
-                  )}
-
-                  {/* Row 6: Footer - inline stats, no border-top box */}
-                  <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
-                    <div className="flex items-center gap-3">
-                      {allFiles.length > 0 && (
-                        <span className="flex items-center gap-1">
-                          <FileText size={10} className="text-slate-400" />
-                          {allFiles.length}
-                        </span>
-                      )}
-                      {allPhotos.length > 0 && (
-                        <span className="flex items-center gap-1">
-                          <ImageIcon size={10} className="text-slate-400" />
-                          {allPhotos.length}
-                        </span>
-                      )}
-                    </div>
-                    <ChevronRight size={14} className="text-slate-300 dark:text-slate-600" />
-                  </div>
-                </button>
-              );
-            })
+            filteredItems.map((item) => (
+              <FeedCard key={item.id} item={item} onSelect={onSelectFeed} />
+            ))
           )}
         </div>
       </div>
