@@ -11,6 +11,7 @@ interface RichTextEditorProps {
   autoFocus?: boolean;
   maxHeight?: number; // px before scrolling (default 140)
   className?: string;
+  textareaRef?: React.RefObject<HTMLTextAreaElement | null>; // optional external ref (e.g. reply focus)
 }
 
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
@@ -21,8 +22,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   autoFocus,
   maxHeight = 140,
   className = '',
+  textareaRef,
 }) => {
-  const taRef = useRef<HTMLTextAreaElement>(null);
+  const internalRef = useRef<HTMLTextAreaElement>(null);
+  const taRef = textareaRef ?? internalRef;
 
   // Auto-grow to content height, capped at maxHeight.
   useEffect(() => {

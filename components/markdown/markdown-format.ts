@@ -2,7 +2,7 @@
 // Given a textarea value + selection range, return the new value + selection
 // after applying a markdown action (toggle-aware).
 
-export type MarkdownAction = 'bold' | 'italic' | 'strike' | 'code' | 'link' | 'bullet' | 'ordered';
+export type MarkdownAction = 'bold' | 'italic' | 'bullet' | 'ordered';
 
 export interface SelectionResult {
   value: string;
@@ -10,11 +10,9 @@ export interface SelectionResult {
   end: number;
 }
 
-const INLINE_MARKER: Record<'bold' | 'italic' | 'strike' | 'code', string> = {
+const INLINE_MARKER: Record<'bold' | 'italic', string> = {
   bold: '**',
   italic: '_',
-  strike: '~~',
-  code: '`',
 };
 
 // Wrap (or unwrap, if already wrapped) the selection with an inline marker.
@@ -42,17 +40,6 @@ function toggleInline(marker: string, value: string, start: number, end: number)
     return { value: wrapped, start: caret, end: caret };
   }
   return { value: wrapped, start: start + m, end: end + m };
-}
-
-// Insert a markdown link around the selection (or "text" placeholder).
-function applyLink(value: string, start: number, end: number, url: string): SelectionResult {
-  const before = value.slice(0, start);
-  const label = value.slice(start, end) || 'text';
-  const after = value.slice(end);
-  const href = url.trim() || 'https://';
-  const md = `[${label}](${href})`;
-  const labelStart = start + 1; // select the label text for quick re-typing
-  return { value: before + md + after, start: labelStart, end: labelStart + label.length };
 }
 
 // Toggle a line prefix (bullet / ordered) across every line in the selection.
@@ -83,24 +70,14 @@ export function applyMarkdown(
   value: string,
   start: number,
   end: number,
-  opts?: { url?: string },
 ): SelectionResult {
   switch (action) {
     case 'bold':
     case 'italic':
-    case 'strike':
-    case 'code':
       return toggleInline(INLINE_MARKER[action], value, start, end);
-    case 'link':
-      return applyLink(value, start, end, opts?.url ?? '');
     case 'bullet':
       return prefixLines('bullet', value, start, end);
     case 'ordered':
       return prefixLines('ordered', value, start, end);
   }
-}
-
-// Only allow safe link schemes (blocks javascript:, data:, etc.).
-export function isSafeHref(url: string): boolean {
-  return /^(https?:|mailto:)/i.test(url.trim());
 }

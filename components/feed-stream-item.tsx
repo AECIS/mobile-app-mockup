@@ -2,6 +2,7 @@ import React from 'react';
 import { StreamItem, FeedItemType, getStatusConfig } from '../types';
 import PhotoGrid from './feed-photo-grid';
 import { FileChipList } from './feed-file-chip';
+import { MarkdownRenderer } from './markdown';
 
 // ---------------------------------------------------------------------------
 // Action labels/descriptions for status-change activities (shared by the feed
@@ -110,10 +111,11 @@ const FeedStreamItem: React.FC<FeedStreamItemProps> = ({
           </>
         ) : (
           bodyOverride ?? (
-            <p className={`text-[14px] text-slate-800 dark:text-slate-200 leading-relaxed mt-0.5 ${clampClass}`}>
-              {replyToName && <span className="text-[#3b82f6] font-semibold">{replyToName} </span>}
-              {text}
-            </p>
+            <MarkdownRenderer
+              source={text}
+              className={`text-[14px] text-slate-800 dark:text-slate-200 leading-relaxed mt-0.5 ${clampClass}`}
+              leading={replyToName ? <span className="text-[#3b82f6] font-semibold">{replyToName} </span> : undefined}
+            />
           )
         )}
 

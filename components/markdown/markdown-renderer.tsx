@@ -1,39 +1,17 @@
 import React from 'react';
-import { isSafeHref } from './markdown-format';
 
 // Safe markdown subset renderer -> React nodes.
-// No dangerouslySetInnerHTML; React escapes text. Only http/https/mailto links.
-// Supported: **bold**, _italic_, ~~strike~~, `code`, [text](url), - bullets, 1. ordered.
+// No dangerouslySetInnerHTML; React escapes text.
+// Supported: **bold**, _italic_, - bullets, 1. ordered.
 
 interface InlineRule {
   re: RegExp;
   render: (m: RegExpExecArray, key: string) => React.ReactNode;
 }
 
-// Precedence matters: code first (literal), then bold, strike, italic, link.
 const INLINE_RULES: InlineRule[] = [
-  {
-    re: /`([^`]+)`/,
-    render: (m, key) => (
-      <code key={key} className="px-1 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-[0.92em] font-mono">
-        {m[1]}
-      </code>
-    ),
-  },
   { re: /\*\*([^*]+)\*\*/, render: (m, key) => <strong key={key}>{renderInline(m[1], key)}</strong> },
-  { re: /~~([^~]+)~~/, render: (m, key) => <s key={key}>{renderInline(m[1], key)}</s> },
   { re: /_([^_]+)_/, render: (m, key) => <em key={key}>{renderInline(m[1], key)}</em> },
-  {
-    re: /\[([^\]]+)\]\(([^)\s]+)\)/,
-    render: (m, key) =>
-      isSafeHref(m[2]) ? (
-        <a key={key} href={m[2]} target="_blank" rel="noopener noreferrer" className="text-[#3b82f6] underline">
-          {renderInline(m[1], key)}
-        </a>
-      ) : (
-        m[0] // unsafe scheme -> render literally
-      ),
-  },
 ];
 
 function renderInline(text: string, keyPrefix: string): React.ReactNode[] {
@@ -100,10 +78,31 @@ function parseBlocks(src: string): Block[] {
   return blocks;
 }
 
-export const MarkdownRenderer: React.FC<{ source: string; className?: string }> = ({ source, className }) => {
+export const MarkdownRenderer: React.FC<{
+  source: string;
+  className?: string;
+  leading?: React.ReactNode; // inline node prepended to the first paragraph (e.g. reply prefix)
+}> = ({ source, className, leading }) => {
   const blocks = parseBlocks(source || '');
+
+  // Common case: a single paragraph -> render inline in the wrapper so the
+  // caller's line-clamp works and the `leading` prefix stays on the same line.
+  if (blocks.length <= 1 && (blocks[0]?.type ?? 'p') === 'p') {
+    const lines = blocks[0]?.type === 'p' ? blocks[0].lines : [];
+    return (
+      <div className={className}>
+        {leading}
+        {lines.flatMap((ln, li) =>
+          li === 0 ? renderInline(ln, `p-${li}`) : [<br key={`br-${li}`} />, ...renderInline(ln, `p-${li}`)],
+        )}
+      </div>
+    );
+  }
+
+  const firstIsParagraph = blocks[0]?.type === 'p';
   return (
     <div className={className}>
+      {leading && !firstIsParagraph && leading}
       {blocks.map((b, bi) => {
         if (b.type === 'ul') {
           return (
@@ -121,6 +120,7 @@ export const MarkdownRenderer: React.FC<{ source: string; className?: string }> 
         }
         return (
           <p key={bi}>
+            {bi === 0 && leading}
             {b.lines.flatMap((ln, li) =>
               li === 0
                 ? renderInline(ln, `${bi}-${li}`)

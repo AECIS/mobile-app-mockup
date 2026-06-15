@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bold, Italic, Strikethrough, Code, Link as LinkIcon, List, ListOrdered } from 'lucide-react';
+import { Bold, Italic, List, ListOrdered } from 'lucide-react';
 import { applyMarkdown, MarkdownAction } from './markdown-format';
 
 // Formatting toolbar that operates on a controlled textarea via its ref.
@@ -12,11 +12,8 @@ interface MarkdownToolbarProps {
 const BUTTONS: { action: MarkdownAction; Icon: React.ComponentType<{ size?: number }>; label: string }[] = [
   { action: 'bold', Icon: Bold, label: 'Bold' },
   { action: 'italic', Icon: Italic, label: 'Italic' },
-  { action: 'strike', Icon: Strikethrough, label: 'Strikethrough' },
-  { action: 'code', Icon: Code, label: 'Inline code' },
-  { action: 'link', Icon: LinkIcon, label: 'Link' },
-  { action: 'bullet', Icon: List, label: 'Bullet list' },
   { action: 'ordered', Icon: ListOrdered, label: 'Numbered list' },
+  { action: 'bullet', Icon: List, label: 'Bullet list' },
 ];
 
 const MarkdownToolbar: React.FC<MarkdownToolbarProps> = ({ textareaRef, value, onChange }) => {
@@ -24,14 +21,7 @@ const MarkdownToolbar: React.FC<MarkdownToolbarProps> = ({ textareaRef, value, o
     const ta = textareaRef.current;
     if (!ta) return;
 
-    let opts: { url?: string } | undefined;
-    if (action === 'link') {
-      const url = window.prompt('Link URL', 'https://');
-      if (url === null) return; // cancelled
-      opts = { url };
-    }
-
-    const res = applyMarkdown(action, value, ta.selectionStart, ta.selectionEnd, opts);
+    const res = applyMarkdown(action, value, ta.selectionStart, ta.selectionEnd);
     onChange(res.value);
     // Restore focus + selection after React re-renders.
     requestAnimationFrame(() => {

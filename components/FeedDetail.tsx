@@ -8,6 +8,7 @@ import {
 import { FeedItem, FeedComment, FeedAttachment, StreamItem, getStatusConfig, SUBMITTAL_STATUS_CONFIG, ISSUE_STATUS_CONFIG } from '../types';
 import FeedStreamItem from './feed-stream-item';
 import OverlayHeader from './overlay-header';
+import { RichTextEditor } from './markdown';
 import ActionSheet from './ActionSheet';
 import ActionForm, { ActionFormType, ActionFormData } from './ActionForm';
 import { projectUsers } from './mockData';
@@ -61,7 +62,7 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
   const [showAttachOptions, setShowAttachOptions] = useState(false);
   const [showActionForm, setShowActionForm] = useState(false);
   const [selectedAction, setSelectedAction] = useState<ActionFormType | null>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const streamEndRef = useRef<HTMLDivElement>(null);
 
   const statusConfig = getStatusConfig(item.type, item.status);
@@ -459,10 +460,10 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
                   replyToName={parentComment?.userName}
                   bodyOverride={isEditing ? (
                     <div className="mt-2">
-                      <textarea
+                      <RichTextEditor
                         value={editText}
-                        onChange={(e) => setEditText(e.target.value)}
-                        className="w-full text-[14px] text-slate-700 dark:text-slate-200 bg-[#f0f2f5] dark:bg-slate-700 rounded-2xl p-3 outline-none border-none resize-none min-h-[60px]"
+                        onChange={setEditText}
+                        onSubmit={() => handleSaveEdit(comment.id)}
                         autoFocus
                       />
                       <div className="flex gap-2 mt-2 justify-end">
@@ -555,9 +556,9 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
           </div>
         )}
 
-        <div className="px-3 pt-1.5 flex items-center gap-2">
+        <div className="px-3 pt-1.5 flex items-end gap-2">
           {/* Left buttons - Camera & More */}
-          <div className="flex items-center gap-1 flex-shrink-0">
+          <div className="flex items-center gap-1 flex-shrink-0 pb-0.5">
             <button
               onClick={handleAddMockAttachment}
               className="w-9 h-9 flex items-center justify-center rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 active:bg-slate-200 dark:active:bg-slate-600 active:scale-95 transition-all"
@@ -576,17 +577,14 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
             </button>
           </div>
 
-          {/* Input field */}
-          <div className="flex-1 bg-[#f0f2f5] dark:bg-slate-700 rounded-full flex items-center px-3.5 py-1.5 min-h-[36px]">
-            <input
-              ref={inputRef}
-              type="text"
+          {/* Input field - rich text editor (markdown) */}
+          <div className="flex-1 min-w-0">
+            <RichTextEditor
               value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendComment(); } }}
-              onFocus={() => setShowAttachOptions(false)}
-              placeholder="Write a comment..."
-              className="flex-1 bg-transparent outline-none text-[14px] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-slate-500 min-w-0"
+              onChange={setCommentText}
+              onSubmit={handleSendComment}
+              textareaRef={inputRef}
+              placeholder="Write a comment…"
             />
           </div>
 
@@ -594,7 +592,7 @@ const FeedDetail: React.FC<FeedDetailProps> = ({ item, onClose }) => {
           <button
             onClick={handleSendComment}
             disabled={!commentText.trim() && commentAttachments.length === 0}
-            className={`w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-all flex-shrink-0 ${
+            className={`w-9 h-9 rounded-full flex items-center justify-center active:scale-90 transition-all flex-shrink-0 mb-0.5 ${
               commentText.trim() || commentAttachments.length > 0
                 ? 'text-[#3b82f6]'
                 : 'text-slate-300 dark:text-slate-600'

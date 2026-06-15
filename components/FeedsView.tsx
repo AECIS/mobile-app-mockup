@@ -255,7 +255,7 @@ const feedItems: FeedItem[] = [
     revision: 1,
     stream: [
       { kind: 'activity', data: { id: 'act-10', userId: 'm5', userName: 'David Chen', userStakeholder: 'MC', action: 'open', statusKey: 'Opened', timestamp: '30 min ago' } },
-      { kind: 'comment', data: { id: 'c8', userId: 'm3', userName: 'James Wilson', userStakeholder: 'AR', text: 'Will arrange structural assessment.', timestamp: '15 min ago', timestampMs: now - 900000 } },
+      { kind: 'comment', data: { id: 'c8', userId: 'm3', userName: 'James Wilson', userStakeholder: 'AR', text: 'Will arrange a **structural assessment** ASAP — proceeding _today_.', timestamp: '15 min ago', timestampMs: now - 900000 } },
     ],
   },
   {
