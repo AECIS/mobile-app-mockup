@@ -2,9 +2,10 @@
 import React, { useState } from 'react';
 import { Task } from '../types';
 // Added MessageSquare to the imports from lucide-react
-import { MoreVertical, FileText, Calendar, Clock, Users, Paperclip, Send, Smile, MessageSquare } from 'lucide-react';
+import { MoreVertical, FileText, Calendar, Clock, Users, Paperclip, Send, MessageSquare } from 'lucide-react';
 import ActionDrawer from './ActionDrawer';
 import OverlayHeader from './overlay-header';
+import { RichTextEditor, MarkdownRenderer } from './markdown';
 
 interface TaskDetailProps {
   task: Task;
@@ -13,6 +14,8 @@ interface TaskDetailProps {
 
 const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose }) => {
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const handleSend = () => setCommentText('');
 
   return (
     <div className="fixed inset-0 bg-white dark:bg-slate-900 z-[60] flex flex-col animate-in slide-in-from-bottom duration-300">
@@ -112,22 +115,31 @@ const TaskDetail: React.FC<TaskDetailProps> = ({ task, onClose }) => {
                  <span className="text-xs font-bold text-slate-800 dark:text-slate-100">Kenneth Alanda</span>
                  <span className="text-[10px] text-slate-400 dark:text-slate-500">10:00 AM</span>
                </div>
-               <p className="text-sm text-slate-500 dark:text-slate-400">I have updated the latest research file. Please take a look!</p>
+               <MarkdownRenderer
+                 source="I have updated the **latest research file**. Please take a look!"
+                 className="text-sm text-slate-500 dark:text-slate-400"
+               />
              </div>
            </div>
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-slate-900 border-t border-slate-50 dark:border-slate-700 flex items-center gap-3">
-        <div className="flex-1 bg-[#fafafa] dark:bg-slate-800 rounded-full h-12 flex items-center px-4 gap-2 border border-slate-100 dark:border-slate-700">
-          <input
-            placeholder="Type your comment..."
-            className="flex-1 bg-transparent outline-none text-sm text-slate-600 dark:text-slate-300 placeholder:text-slate-400 dark:placeholder:text-slate-500"
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white dark:bg-slate-900 border-t border-slate-50 dark:border-slate-700 flex items-end gap-3">
+        <div className="flex-1 min-w-0">
+          <RichTextEditor
+            value={commentText}
+            onChange={setCommentText}
+            onSubmit={handleSend}
+            placeholder="Type your comment…"
           />
-          <button className="text-slate-400 dark:text-slate-500"><Smile size={20} /></button>
-          <button className="text-slate-400 dark:text-slate-500 rotate-45"><Paperclip size={20} /></button>
         </div>
-        <button className="w-12 h-12 bg-[#3b82f6] dark:bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-[#2563eb] dark:hover:bg-blue-500 transition-colors">
+        <button
+          onClick={handleSend}
+          disabled={!commentText.trim()}
+          className={`w-12 h-12 rounded-full flex items-center justify-center text-white transition-colors mb-0.5 ${
+            commentText.trim() ? 'bg-[#3b82f6] dark:bg-blue-600 hover:bg-[#2563eb] dark:hover:bg-blue-500' : 'bg-slate-300 dark:bg-slate-600'
+          }`}
+        >
           <Send size={20} />
         </button>
       </div>
