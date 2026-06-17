@@ -101,6 +101,7 @@ const App: React.FC = () => {
 
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -232,8 +233,18 @@ const App: React.FC = () => {
   const handleNotificationsClick = useCallback(() => setIsNotificationsOpen(true), []);
 
   const handleTabChange = (tab: BottomTab) => {
-    if (tab === BottomTab.ADD) {
-      setIsCreateMenuOpen(true);
+    // Center camera launches the device camera capture
+    if (tab === BottomTab.CAMERA) {
+      cameraInputRef.current?.click();
+      return;
+    }
+    // Offline Data and Notifications open existing overlays without switching tab
+    if (tab === BottomTab.OFFLINE) {
+      setIsStorageOpen(true);
+      return;
+    }
+    if (tab === BottomTab.NOTIFICATIONS) {
+      setIsNotificationsOpen(true);
       return;
     }
     setCurrentTab(tab);
@@ -267,7 +278,7 @@ const App: React.FC = () => {
       );
     }
 
-    if (currentTab === BottomTab.PROFILE) {
+    if (currentTab === BottomTab.MORE) {
       return (
         <div className="px-3 pt-2">
           <ProfileView onLogout={() => console.log('Logout clicked')} />
@@ -289,8 +300,8 @@ const App: React.FC = () => {
     <div className="relative min-h-screen max-w-md mx-auto bg-[#faf9f6] dark:bg-slate-900 text-slate-800 dark:text-slate-100 transition-colors">
       {!hasFullOverlay && (
         <>
-          {/* Hide project header on Profile tab — it's user-scoped, not project-scoped */}
-          {currentTab !== BottomTab.PROFILE && (
+          {/* Hide project header on More tab — it's user-scoped, not project-scoped */}
+          {currentTab !== BottomTab.MORE && (
             <>
               <StickyHeader
                 activeProject={activeProject}
@@ -400,10 +411,25 @@ const App: React.FC = () => {
         onClose={() => setIsStorageOpen(false)}
       />
 
+      {/* Hidden input — center Camera tab opens the device camera */}
+      <input
+        ref={cameraInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) console.log('Captured photo:', file.name);
+          e.target.value = '';
+        }}
+      />
+
       <BottomNav
         currentTab={currentTab}
         onTabChange={handleTabChange}
         isVisible={isBottomNavVisible}
+        badges={{ [BottomTab.NOTIFICATIONS]: 3 }}
       />
 
       <CreateActionMenu

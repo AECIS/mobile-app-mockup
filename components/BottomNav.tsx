@@ -1,6 +1,6 @@
 import React from 'react';
 import { BottomTab } from '../types';
-import { Briefcase, Plus } from 'lucide-react';
+import { Wrench, HardDrive, Camera, Bell, Menu } from 'lucide-react';
 
 interface BottomNavProps {
   currentTab: BottomTab;
@@ -10,7 +10,6 @@ interface BottomNavProps {
 }
 
 interface NavItemProps {
-  tab: BottomTab;
   icon: React.ReactNode;
   activeIcon?: React.ReactNode;
   label: string;
@@ -19,7 +18,7 @@ interface NavItemProps {
   onClick: () => void;
 }
 
-const NavItem: React.FC<NavItemProps> = ({ tab, icon, activeIcon, label, isActive, badge, onClick }) => (
+const NavItem: React.FC<NavItemProps> = ({ icon, activeIcon, label, isActive, badge, onClick }) => (
   <button
     onClick={onClick}
     aria-label={label}
@@ -27,7 +26,7 @@ const NavItem: React.FC<NavItemProps> = ({ tab, icon, activeIcon, label, isActiv
     role="tab"
     aria-selected={isActive}
     className={`
-      flex flex-col items-center justify-center flex-1 py-2 min-h-[52px] min-w-[52px]
+      flex flex-col items-center justify-center flex-1 py-2 min-h-[52px]
       transition-all duration-200 rounded-2xl relative
       focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3b82f6] focus-visible:ring-inset
       active:scale-95
@@ -67,48 +66,58 @@ const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onTabChange, isVisibl
       <div className="mx-3 mb-3">
         <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-lg rounded-2xl px-1.5 py-1 flex items-center justify-between shadow-2xl border border-slate-100/80 dark:border-slate-700/80 transition-colors">
           <NavItem
-            tab={BottomTab.TOOLS}
-            icon={<Briefcase size={22} strokeWidth={2} />}
-            activeIcon={<Briefcase size={22} strokeWidth={2.5} fill="currentColor" fillOpacity={0.15} />}
+            icon={<Wrench size={22} strokeWidth={2} />}
+            activeIcon={<Wrench size={22} strokeWidth={2.5} fill="currentColor" fillOpacity={0.15} />}
             label="Tools"
             isActive={currentTab === BottomTab.TOOLS}
+            badge={badges[BottomTab.TOOLS]}
             onClick={() => onTabChange(BottomTab.TOOLS)}
           />
 
-          {/* Floating Action Button */}
+          <NavItem
+            icon={<HardDrive size={22} strokeWidth={2} />}
+            activeIcon={<HardDrive size={22} strokeWidth={2.5} fill="currentColor" fillOpacity={0.15} />}
+            label="Offline"
+            isActive={currentTab === BottomTab.OFFLINE}
+            badge={badges[BottomTab.OFFLINE]}
+            onClick={() => onTabChange(BottomTab.OFFLINE)}
+          />
+
+          {/* Center Camera — elevated and larger than the rest */}
           <div className="relative -top-4 mx-1">
             <button
-              onClick={() => onTabChange(BottomTab.ADD)}
-              aria-label="Create new item"
+              onClick={() => onTabChange(BottomTab.CAMERA)}
+              aria-label="Open camera"
               className={`
-                w-12 h-12 bg-[#3b82f6] rounded-xl
+                w-16 h-16 bg-[#3b82f6] rounded-2xl
                 flex items-center justify-center text-white
-                shadow-[0_8px_24px_-4px_rgba(240,107,62,0.5)]
+                shadow-[0_8px_24px_-4px_rgba(59,130,246,0.5)]
                 transition-all duration-200
-                hover:bg-[#2563eb] hover:shadow-[0_12px_28px_-4px_rgba(240,107,62,0.6)]
-                active:scale-90 active:shadow-[0_4px_12px_-2px_rgba(240,107,62,0.4)]
+                hover:bg-[#2563eb] hover:shadow-[0_12px_28px_-4px_rgba(59,130,246,0.6)]
+                active:scale-90 active:shadow-[0_4px_12px_-2px_rgba(59,130,246,0.4)]
                 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#3b82f6]
               `}
             >
-              <Plus size={28} strokeWidth={2.5} />
+              <Camera size={30} strokeWidth={2.5} />
             </button>
           </div>
 
           <NavItem
-            tab={BottomTab.PROFILE}
-            icon={
-              <div className="w-6 h-6 rounded-full border-2 border-slate-200 dark:border-slate-600 overflow-hidden transition-all">
-                <img src="https://picsum.photos/seed/profile/100" className="w-full h-full object-cover" alt="" />
-              </div>
-            }
-            activeIcon={
-              <div className="w-6 h-6 rounded-full border-2 border-[#3b82f6] overflow-hidden ring-2 ring-blue-100 dark:ring-blue-900/30 transition-all">
-                <img src="https://picsum.photos/seed/profile/100" className="w-full h-full object-cover" alt="" />
-              </div>
-            }
-            label="Profile"
-            isActive={currentTab === BottomTab.PROFILE}
-            onClick={() => onTabChange(BottomTab.PROFILE)}
+            icon={<Bell size={22} strokeWidth={2} />}
+            activeIcon={<Bell size={22} strokeWidth={2.5} fill="currentColor" fillOpacity={0.15} />}
+            label="Alerts"
+            isActive={currentTab === BottomTab.NOTIFICATIONS}
+            badge={badges[BottomTab.NOTIFICATIONS]}
+            onClick={() => onTabChange(BottomTab.NOTIFICATIONS)}
+          />
+
+          <NavItem
+            icon={<Menu size={22} strokeWidth={2} />}
+            activeIcon={<Menu size={22} strokeWidth={2.5} />}
+            label="More"
+            isActive={currentTab === BottomTab.MORE}
+            badge={badges[BottomTab.MORE]}
+            onClick={() => onTabChange(BottomTab.MORE)}
           />
         </div>
       </div>

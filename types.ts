@@ -3,8 +3,10 @@ import React from 'react';
 
 export enum BottomTab {
   TOOLS = 'Tools',
-  ADD = 'Add',
-  PROFILE = 'Profile'
+  OFFLINE = 'Offline Data',
+  CAMERA = 'Camera',
+  NOTIFICATIONS = 'Notifications',
+  MORE = 'More'
 }
 
 export type Priority = 'High' | 'Medium' | 'Low';
