@@ -11,6 +11,22 @@ export enum BottomTab {
 
 export type Priority = 'High' | 'Medium' | 'Low';
 
+// Hierarchy: Workspace -> ProjectGroup (optional) -> Project.
+// A user can join many workspaces; each workspace has many projects,
+// optionally organized into project groups.
+export interface Workspace {
+  id: string;
+  name: string;
+  initials: string;
+  icon?: string;
+}
+
+export interface ProjectGroup {
+  id: string;
+  name: string;
+  workspaceId: string; // owning workspace
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -18,6 +34,8 @@ export interface Project {
   state: 'active' | 'completed';
   address: string;
   icon?: string;
+  workspaceId: string; // owning workspace
+  groupId?: string;    // optional project group; undefined = directly under workspace
 }
 
 export interface Stakeholder {

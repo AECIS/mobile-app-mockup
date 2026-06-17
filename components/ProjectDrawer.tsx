@@ -1,182 +1,159 @@
-
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Project } from '../types';
-import { X, Search, MapPin, CheckCircle2, Clock } from 'lucide-react';
+import { Project, Workspace, ProjectGroup } from '../types';
+import { X, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getAvatarColor, getRecentIds, pushRecentId } from './project-drawer-utils';
+import { ProjectCard, SectionLabel, EmptyState } from './project-drawer-cards';
 
 interface ProjectDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   projects: Project[];
+  workspaces: Workspace[];
+  projectGroups: ProjectGroup[];
   activeId: string;
   onSelect: (project: Project) => void;
 }
 
 type FilterType = 'all' | 'active' | 'completed';
 
-// Avatar color palette — deterministic by project id
-const AVATAR_COLORS = [
-  'bg-[#95ac71]', 'bg-[#5b8fb9]', 'bg-[#e07b54]', 'bg-[#8b6fb0]',
-  'bg-[#c0855a]', 'bg-[#6b9e8a]', 'bg-[#d4756b]', 'bg-[#7a8eb5]',
-  'bg-[#a4875b]', 'bg-[#6baeae]', 'bg-[#b87dad]', 'bg-[#8aab5e]',
-];
+const ProjectDrawer: React.FC<ProjectDrawerProps> = ({ isOpen, onClose, projects, workspaces, projectGroups, activeId, onSelect }) => {
+  // When the user belongs to a single workspace, the workspace-picker step is
+  // redundant — drill straight into that workspace.
+  const singleWorkspace = workspaces.length === 1;
 
-const getAvatarColor = (id: string) => {
-  const idx = parseInt(id, 10) || id.charCodeAt(0);
-  return AVATAR_COLORS[idx % AVATAR_COLORS.length];
-};
-
-// Persist recent project ids in localStorage
-const RECENT_KEY = 'aecis_recent_projects';
-const MAX_RECENT = 3;
-
-const getRecentIds = (): string[] => {
-  try {
-    return JSON.parse(localStorage.getItem(RECENT_KEY) || '[]');
-  } catch {
-    return [];
-  }
-};
-
-const pushRecentId = (id: string) => {
-  const prev = getRecentIds().filter((i) => i !== id);
-  const next = [id, ...prev].slice(0, MAX_RECENT);
-  localStorage.setItem(RECENT_KEY, JSON.stringify(next));
-};
-
-const ProjectDrawer: React.FC<ProjectDrawerProps> = ({ isOpen, onClose, projects, activeId, onSelect }) => {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<FilterType>('all');
+  const [selectedWsId, setSelectedWsId] = useState<string | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
-  // Reset state when drawer opens
+  // Reset state when drawer opens.
   useEffect(() => {
     if (isOpen) {
       setSearch('');
       setFilter('all');
+      setSelectedWsId(singleWorkspace ? workspaces[0].id : null);
       setIsAnimating(true);
       const t = setTimeout(() => setIsAnimating(false), 350);
       return () => clearTimeout(t);
     }
-  }, [isOpen]);
+  }, [isOpen, singleWorkspace, workspaces]);
 
-  // Counts
-  const activeCount = projects.filter((p) => p.state === 'active').length;
-  const completedCount = projects.filter((p) => p.state === 'completed').length;
+  const searching = search.trim().length > 0;
+  const selectedWs = workspaces.find((w) => w.id === selectedWsId) || null;
+  // Search always overrides drill-down with flat, cross-workspace results.
+  const view: 'list' | 'detail' | 'search' = searching ? 'search' : selectedWs ? 'detail' : 'list';
 
-  // Recent projects
-  const recentIds = getRecentIds();
-  const recentProjects = useMemo(
-    () => recentIds.map((id) => projects.find((p) => p.id === id)).filter(Boolean) as Project[],
-    [recentIds, projects]
+  // Projects in scope for the current view (before filter/search applied).
+  const scopeProjects = useMemo(
+    () => (view === 'detail' && selectedWs ? projects.filter((p) => p.workspaceId === selectedWs.id) : projects),
+    [view, selectedWs, projects]
   );
 
-  // Filtered + searched
-  const filtered = useMemo(() => {
-    let list = projects;
+  const activeCount = scopeProjects.filter((p) => p.state === 'active').length;
+  const completedCount = scopeProjects.filter((p) => p.state === 'completed').length;
+
+  // Filtered + searched cards for the detail/search views.
+  const displayList = useMemo(() => {
+    let list = scopeProjects;
     if (filter === 'active') list = list.filter((p) => p.state === 'active');
     if (filter === 'completed') list = list.filter((p) => p.state === 'completed');
-    if (search.trim()) {
+    if (searching) {
       const q = search.toLowerCase().trim();
       list = list.filter(
         (p) => p.name.toLowerCase().includes(q) || p.address.toLowerCase().includes(q) || p.initials.toLowerCase().includes(q)
       );
     }
-    return list.sort((a, b) => a.name.localeCompare(b.name));
-  }, [projects, filter, search]);
+    return [...list].sort((a, b) => a.name.localeCompare(b.name));
+  }, [scopeProjects, filter, search, searching]);
 
-  // Show recent section only when no search and filter is "all"
-  const showRecent = !search.trim() && filter === 'all' && recentProjects.length > 0;
+  // Group the detail-view list into (ungrouped projects + project groups).
+  // Projects whose groupId doesn't match a known group fall back to ungrouped
+  // so they're never silently dropped.
+  const detailTree = useMemo(() => {
+    if (!selectedWs) return { ungrouped: [] as Project[], groups: [] as { group: ProjectGroup; items: Project[] }[] };
+    const knownGroupIds = new Set(projectGroups.map((g) => g.id));
+    const ungrouped = displayList.filter((p) => !p.groupId || !knownGroupIds.has(p.groupId));
+    const groups = projectGroups
+      .filter((g) => g.workspaceId === selectedWs.id)
+      .map((g) => ({ group: g, items: displayList.filter((p) => p.groupId === g.id) }))
+      .filter((g) => g.items.length > 0);
+    return { ungrouped, groups };
+  }, [selectedWs, displayList, projectGroups]);
 
-  // All-projects list (excluding recent when shown)
-  const allProjects = showRecent ? filtered.filter((p) => !recentIds.includes(p.id)) : filtered;
+  // Workspace rows for the list view, with per-workspace project counts.
+  const workspaceRows = useMemo(
+    () => workspaces.map((ws) => ({ ws, count: projects.filter((p) => p.workspaceId === ws.id).length })),
+    [workspaces, projects]
+  );
+
+  // Recent projects (list view only). Re-read from localStorage when the drawer
+  // opens — avoids a read on every render and refreshes after the last session.
+  const recentProjects = useMemo(
+    () => getRecentIds().map((id) => projects.find((p) => p.id === id)).filter(Boolean) as Project[],
+    [projects, isOpen]
+  );
 
   const handleSelect = (p: Project) => {
     pushRecentId(p.id);
     onSelect(p);
   };
 
+  const enterWorkspace = (id: string) => {
+    setSelectedWsId(id);
+    setFilter('all');
+    listRef.current?.scrollTo(0, 0);
+  };
+
+  const goBack = () => {
+    setSelectedWsId(null);
+    setSearch('');
+    setFilter('all');
+  };
+
   if (!isOpen) return null;
 
-  const renderProjectCard = (p: Project, isRecent = false) => {
-    const isActive = activeId === p.id;
-    return (
-      <div
-        key={`${isRecent ? 'recent-' : ''}${p.id}`}
-        onClick={() => handleSelect(p)}
-        className={`flex items-center gap-3 p-2.5 rounded-xl border transition-all duration-200 cursor-pointer group ${
-          isActive
-            ? 'bg-[#3b82f6]/5 dark:bg-[#3b82f6]/10 border-[#3b82f6]/30 shadow-sm'
-            : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/70 hover:border-slate-200 dark:hover:border-slate-600'
-        }`}
-      >
-        {/* Avatar */}
-        <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-white text-sm font-bold shrink-0 ${
-          isActive ? 'bg-[#3b82f6]' : getAvatarColor(p.id)
-        }`}>
-          {p.initials}
-        </div>
+  const renderCard = (p: Project, keyPrefix = '') => (
+    <ProjectCard key={`${keyPrefix}${p.id}`} project={p} isActive={activeId === p.id} onSelect={handleSelect} />
+  );
 
-        {/* Info */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span className={`font-semibold text-sm truncate ${
-              isActive ? 'text-[#3b82f6]' : 'text-slate-800 dark:text-slate-100'
-            }`}>
-              {p.name}
-            </span>
-            {isActive && (
-              <span className="shrink-0 w-1.5 h-1.5 rounded-full bg-[#3b82f6] animate-pulse" />
-            )}
-          </div>
-          <div className="flex items-center gap-1.5 mt-0.5">
-            <MapPin size={10} className="text-slate-400 dark:text-slate-500 shrink-0" />
-            <span className="text-[11px] text-slate-400 dark:text-slate-500 truncate">{p.address}</span>
-          </div>
-        </div>
+  // Back button shown only when drilled into a workspace from a multi-workspace list.
+  const showBack = view === 'detail' && !singleWorkspace;
+  const headerTitle = view === 'detail' && selectedWs ? selectedWs.name : 'Switch Project';
+  const headerSubtitle =
+    view === 'list'
+      ? `${workspaces.length} workspace${workspaces.length !== 1 ? 's' : ''}`
+      : view === 'search'
+        ? `${displayList.length} result${displayList.length !== 1 ? 's' : ''}`
+        : `${scopeProjects.length} project${scopeProjects.length !== 1 ? 's' : ''} · ${activeCount} active`;
 
-        {/* Status badge */}
-        <div className={`shrink-0 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-          p.state === 'active'
-            ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400'
-            : 'bg-slate-100 dark:bg-slate-700 text-slate-400 dark:text-slate-500'
-        }`}>
-          {p.state === 'active' ? (
-            <span className="flex items-center gap-0.5"><Clock size={8} /> Active</span>
-          ) : (
-            <span className="flex items-center gap-0.5"><CheckCircle2 size={8} /> Done</span>
-          )}
-        </div>
-      </div>
-    );
-  };
+  const filterChips: { key: FilterType; label: string; count: number }[] = [
+    { key: 'all', label: 'All', count: scopeProjects.length },
+    { key: 'active', label: 'Active', count: activeCount },
+    { key: 'completed', label: 'Completed', count: completedCount },
+  ];
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-[3px] z-50 transition-opacity duration-300"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-[3px] z-50 transition-opacity duration-300" onClick={onClose} />
 
-      {/* Drawer */}
       <div className={`fixed inset-0 max-w-md mx-auto z-50 transition-all duration-300 ease-out ${
         isAnimating ? 'translate-y-full' : 'translate-y-0'
       }`}>
         <div className="bg-white dark:bg-slate-800 shadow-2xl flex flex-col h-full">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 pt-2 pb-2">
-            <div>
-              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">Switch Project</h2>
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                {projects.length} project{projects.length !== 1 ? 's' : ''} &middot; {activeCount} active
-              </p>
+          <div className="flex items-center gap-2 px-4 pt-2 pb-2">
+            {showBack && (
+              <button aria-label="Back to workspaces" onClick={goBack} className="p-1.5 -ml-1.5 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors">
+                <ChevronLeft size={22} className="text-slate-500 dark:text-slate-400" />
+              </button>
+            )}
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 truncate">{headerTitle}</h2>
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">{headerSubtitle}</p>
             </div>
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
-            >
+            <button aria-label="Close" onClick={onClose} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors">
               <X size={20} className="text-slate-400 dark:text-slate-500" />
             </button>
           </div>
@@ -190,11 +167,12 @@ const ProjectDrawer: React.FC<ProjectDrawerProps> = ({ isOpen, onClose, projects
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search by name or address..."
+                placeholder="Search projects by name or address..."
                 className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl text-sm text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 transition-all focus:outline-none focus:ring-2 focus:ring-[#3b82f6]/20 focus:border-[#3b82f6]/40"
               />
               {search && (
                 <button
+                  aria-label="Clear search"
                   onClick={() => { setSearch(''); searchRef.current?.focus(); }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-full transition-colors"
                 >
@@ -204,88 +182,91 @@ const ProjectDrawer: React.FC<ProjectDrawerProps> = ({ isOpen, onClose, projects
             </div>
           </div>
 
-          {/* Filter chips */}
-          <div className="px-4 pb-2 flex gap-2">
-            {([
-              { key: 'all' as FilterType, label: 'All', count: projects.length },
-              { key: 'active' as FilterType, label: 'Active', count: activeCount },
-              { key: 'completed' as FilterType, label: 'Completed', count: completedCount },
-            ]).map(({ key, label, count }) => (
-              <button
-                key={key}
-                onClick={() => setFilter(key)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-200 ${
-                  filter === key
-                    ? 'bg-[#3b82f6] text-white shadow-sm'
-                    : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
-                }`}
-              >
-                {label} ({count})
-              </button>
-            ))}
-          </div>
+          {/* Filter chips — hidden on the workspace list */}
+          {view !== 'list' && (
+            <div className="px-4 pb-2 flex gap-2">
+              {filterChips.map(({ key, label, count }) => (
+                <button
+                  key={key}
+                  onClick={() => setFilter(key)}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all duration-200 ${
+                    filter === key
+                      ? 'bg-[#3b82f6] text-white shadow-sm'
+                      : 'bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600'
+                  }`}
+                >
+                  {label} ({count})
+                </button>
+              ))}
+            </div>
+          )}
 
-          {/* Scrollable list */}
-          <div
-            ref={listRef}
-            className="flex-1 overflow-y-auto overscroll-contain px-4 pb-3"
-            style={{ scrollbarWidth: 'none' }}
-          >
-            {/* Empty state */}
-            {filtered.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-3">
-                  <Search size={24} className="text-slate-300 dark:text-slate-500" />
-                </div>
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">No projects found</p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                  Try a different search or filter
-                </p>
-                {(search || filter !== 'all') && (
-                  <button
-                    onClick={() => { setSearch(''); setFilter('all'); }}
-                    className="mt-3 px-4 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                  >
-                    Clear filters
-                  </button>
-                )}
-              </div>
-            )}
-
-            {filtered.length > 0 && (
+          {/* Scrollable body */}
+          <div ref={listRef} className="flex-1 overflow-y-auto overscroll-contain px-4 pb-3" style={{ scrollbarWidth: 'none' }}>
+            {/* LIST VIEW — pick a workspace */}
+            {view === 'list' && (
               <>
-                {/* Recent section */}
-                {showRecent && (
+                {recentProjects.length > 0 && (
                   <div className="mb-4">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 px-1">
-                      Recent
-                    </p>
+                    <SectionLabel>Recent</SectionLabel>
                     <div className="flex flex-col gap-2">
-                      {recentProjects.map((p) => renderProjectCard(p, true))}
+                      {recentProjects.map((p) => renderCard(p, 'recent-'))}
                     </div>
                   </div>
                 )}
-
-                {/* All projects section */}
-                <div>
-                  {showRecent && allProjects.length > 0 && (
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 px-1">
-                      All Projects
-                    </p>
-                  )}
-                  {!showRecent && search.trim() && (
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-2 px-1">
-                      {filtered.length} result{filtered.length !== 1 ? 's' : ''}
-                    </p>
-                  )}
-                  <div className="flex flex-col gap-2">
-                    {(showRecent ? allProjects : filtered).map((p) => renderProjectCard(p))}
-                  </div>
+                <SectionLabel>Workspaces</SectionLabel>
+                <div className="flex flex-col gap-2">
+                  {workspaceRows.map(({ ws, count }) => (
+                    <button
+                      key={ws.id}
+                      onClick={() => enterWorkspace(ws.id)}
+                      className="flex items-center gap-3 p-2.5 rounded-xl border bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/70 hover:border-slate-200 dark:hover:border-slate-600 transition-all duration-200 cursor-pointer text-left"
+                    >
+                      <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-white text-sm font-bold shrink-0 ${getAvatarColor(ws.id)}`}>
+                        {ws.initials}
+                      </div>
+                      <span className="flex-1 min-w-0 font-semibold text-sm text-slate-800 dark:text-slate-100 truncate">{ws.name}</span>
+                      <span className="shrink-0 text-[11px] font-semibold text-slate-400 dark:text-slate-500 tabular-nums">{count}</span>
+                      <ChevronRight size={16} className="shrink-0 text-slate-300 dark:text-slate-600" />
+                    </button>
+                  ))}
                 </div>
               </>
             )}
-          </div>
 
+            {/* SEARCH VIEW — flat cross-workspace results */}
+            {view === 'search' && (
+              displayList.length > 0 ? (
+                <>
+                  <SectionLabel>{`${displayList.length} result${displayList.length !== 1 ? 's' : ''}`}</SectionLabel>
+                  <div className="flex flex-col gap-2">{displayList.map((p) => renderCard(p))}</div>
+                </>
+              ) : (
+                <EmptyState onClear={() => { setSearch(''); setFilter('all'); }} canClear />
+              )
+            )}
+
+            {/* DETAIL VIEW — one workspace: ungrouped projects + groups */}
+            {view === 'detail' && (
+              displayList.length > 0 ? (
+                <>
+                  {detailTree.ungrouped.length > 0 && (
+                    <div className="flex flex-col gap-2 mb-4">
+                      {detailTree.ungrouped.map((p) => renderCard(p))}
+                    </div>
+                  )}
+                  {detailTree.groups.map(({ group, items }) => (
+                    <div key={group.id} className="mb-4 last:mb-0">
+                      <SectionLabel>{group.name}</SectionLabel>
+                      <div className="flex flex-col gap-2">{items.map((p) => renderCard(p))}</div>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <EmptyState onClear={() => setFilter('all')} canClear={filter !== 'all'} />
+              )
+            )}
+          </div>
         </div>
       </div>
     </>

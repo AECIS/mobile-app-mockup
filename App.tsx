@@ -23,7 +23,7 @@ import { AnalyticsReportList } from './components/AnalyticsReport';
 import ProfileView from './components/ProfileView';
 import CreateActionMenu, { CreateAction } from './components/CreateActionMenu';
 import StorageManager from './components/StorageManager';
-import { BottomTab, Project, Task, FeedItem } from './types';
+import { BottomTab, Project, Workspace, ProjectGroup, Task, FeedItem } from './types';
 
 // Fixed Header — project selector + search + notifications (no sub-tabs)
 const StickyHeader = memo(({
@@ -76,6 +76,38 @@ const StickyHeader = memo(({
     </header>
   </div>
 ));
+
+// Mock data at module scope = stable references (replace with API data later).
+// Workspaces the user has joined — each owns many projects.
+const workspaces: Workspace[] = [
+  { id: 'w1', name: 'AECIS Group', initials: 'AG' },
+  { id: 'w2', name: 'Skyline Developments', initials: 'SD' },
+  { id: 'w3', name: 'Heritage Builders', initials: 'HB' },
+];
+
+// Optional middle layer: project groups within a workspace.
+// Projects without a groupId render directly under their workspace.
+const projectGroups: ProjectGroup[] = [
+  { id: 'g1', name: 'Commercial Towers', workspaceId: 'w1' },
+  { id: 'g2', name: 'Research & Health', workspaceId: 'w1' },
+  { id: 'g3', name: 'Coastal Resorts', workspaceId: 'w2' },
+  { id: 'g4', name: 'Restorations', workspaceId: 'w3' },
+];
+
+const projects: Project[] = [
+  { id: '1', name: 'AECIS Corporate HQ', initials: 'AC', state: 'active', address: '123 Construction Way, San Francisco, CA', workspaceId: 'w1', groupId: 'g1' },
+  { id: '2', name: 'Nova Research Lab', initials: 'NL', state: 'active', address: '456 Innovation Dr, Austin, TX', workspaceId: 'w1', groupId: 'g2' },
+  { id: '3', name: 'Sunrise Plaza', initials: 'SP', state: 'active', address: '789 Sunset Blvd, Los Angeles, CA', workspaceId: 'w1' },
+  { id: '4', name: 'Marina Bay Tower', initials: 'MB', state: 'active', address: '10 Bayfront Ave, Singapore 018956', workspaceId: 'w2', groupId: 'g3' },
+  { id: '5', name: 'Central Park Residences', initials: 'CP', state: 'completed', address: '250 Central Park West, New York, NY', workspaceId: 'w2' },
+  { id: '6', name: 'Green Valley Hospital', initials: 'GV', state: 'active', address: '500 Medical Center Dr, Denver, CO', workspaceId: 'w1', groupId: 'g2' },
+  { id: '7', name: 'Pacific Heights Mall', initials: 'PH', state: 'completed', address: '2100 Pacific Ave, San Francisco, CA', workspaceId: 'w3', groupId: 'g4' },
+  { id: '8', name: 'Riverside School Campus', initials: 'RS', state: 'active', address: '88 River Rd, Portland, OR', workspaceId: 'w3' },
+  { id: '9', name: 'Tech Hub Office Park', initials: 'TH', state: 'active', address: '1500 Technology Pkwy, San Jose, CA', workspaceId: 'w1', groupId: 'g1' },
+  { id: '10', name: 'Heritage Museum Renovation', initials: 'HM', state: 'completed', address: '1200 Museum Mile, Chicago, IL', workspaceId: 'w3', groupId: 'g4' },
+  { id: '11', name: 'Diamond Bay Resort', initials: 'DB', state: 'active', address: '77 Oceanfront Dr, Miami, FL', workspaceId: 'w2', groupId: 'g3' },
+  { id: '12', name: 'Skyline Apartments', initials: 'SA', state: 'active', address: '350 High St, Seattle, WA', workspaceId: 'w2' },
+];
 
 const App: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<BottomTab>(BottomTab.TOOLS);
@@ -138,93 +170,6 @@ const App: React.FC = () => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const projects: Project[] = [
-    {
-      id: '1',
-      name: 'AECIS Corporate HQ',
-      initials: 'AC',
-      state: 'active',
-      address: '123 Construction Way, San Francisco, CA'
-    },
-    {
-      id: '2',
-      name: 'Nova Research Lab',
-      initials: 'NL',
-      state: 'active',
-      address: '456 Innovation Dr, Austin, TX'
-    },
-    {
-      id: '3',
-      name: 'Sunrise Plaza',
-      initials: 'SP',
-      state: 'active',
-      address: '789 Sunset Blvd, Los Angeles, CA'
-    },
-    {
-      id: '4',
-      name: 'Marina Bay Tower',
-      initials: 'MB',
-      state: 'active',
-      address: '10 Bayfront Ave, Singapore 018956'
-    },
-    {
-      id: '5',
-      name: 'Central Park Residences',
-      initials: 'CP',
-      state: 'completed',
-      address: '250 Central Park West, New York, NY'
-    },
-    {
-      id: '6',
-      name: 'Green Valley Hospital',
-      initials: 'GV',
-      state: 'active',
-      address: '500 Medical Center Dr, Denver, CO'
-    },
-    {
-      id: '7',
-      name: 'Pacific Heights Mall',
-      initials: 'PH',
-      state: 'completed',
-      address: '2100 Pacific Ave, San Francisco, CA'
-    },
-    {
-      id: '8',
-      name: 'Riverside School Campus',
-      initials: 'RS',
-      state: 'active',
-      address: '88 River Rd, Portland, OR'
-    },
-    {
-      id: '9',
-      name: 'Tech Hub Office Park',
-      initials: 'TH',
-      state: 'active',
-      address: '1500 Technology Pkwy, San Jose, CA'
-    },
-    {
-      id: '10',
-      name: 'Heritage Museum Renovation',
-      initials: 'HM',
-      state: 'completed',
-      address: '1200 Museum Mile, Chicago, IL'
-    },
-    {
-      id: '11',
-      name: 'Diamond Bay Resort',
-      initials: 'DB',
-      state: 'active',
-      address: '77 Oceanfront Dr, Miami, FL'
-    },
-    {
-      id: '12',
-      name: 'Skyline Apartments',
-      initials: 'SA',
-      state: 'active',
-      address: '350 High St, Seattle, WA'
-    }
-  ];
 
   const [activeProject, setActiveProject] = useState<Project>(projects[0]);
 
@@ -442,6 +387,8 @@ const App: React.FC = () => {
         isOpen={isProjectDrawerOpen}
         onClose={() => setIsProjectDrawerOpen(false)}
         projects={projects}
+        workspaces={workspaces}
+        projectGroups={projectGroups}
         activeId={activeProject.id}
         onSelect={(p) => {
           setActiveProject(p);
